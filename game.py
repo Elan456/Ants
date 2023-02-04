@@ -1,4 +1,14 @@
 import pygame
+import numpy as np
+
+
+def normalize(x):
+    magnitude = np.linalg.norm(x)
+    if magnitude > 0:
+        return x / np.linalg.norm(x)
+    else:
+        return np.zeros(2)
+
 
 black = (0, 0, 0, 0)
 
@@ -11,6 +21,9 @@ class Game:
     def __init__(self):
         self.cam_x = 0
         self.cam_y = 0
+
+        self.cam_m = np.zeros(2)
+        print(self.cam_m)
 
         self.d_width = 1000
         self.d_height = 500
@@ -28,7 +41,33 @@ class Game:
         self.ground_layer.fill(black)
         self.gameDisplay.fill(black)
 
+    def draw_world_boundaries(self):
+        pygame.draw.rect(self.ground_layer, (255, 0, 0), [0, 0, self.w_width, self.w_height], 4)
+
+    def process_user_input_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        keys = pygame.key.get_pressed()
+        self.cam_m = np.zeros(2)
+
+        if keys[pygame.K_UP]:
+            self.cam_m[1] -= 1
+        if keys[pygame.K_DOWN]:
+            self.cam_m[1] += 1
+        if keys[pygame.K_RIGHT]:
+            self.cam_m[0] += 1
+        if keys[pygame.K_LEFT]:
+            self.cam_m[0] -= 1
+
+        self.cam_m = normalize(self.cam_m)
+
+        self.cam_x += self.cam_m[0]
+        self.cam_y += self.cam_m[1]
+
     def display_display(self):
-        self.gameDisplay.blit(self.ground_layer, (self.cam_x, self.cam_y))
-        self.gameDisplay.blit(self.ant_layer, (self.cam_x, self.cam_y))
+        self.draw_world_boundaries()
+        self.gameDisplay.blit(self.ground_layer, (-1 * self.cam_x, -1 * self.cam_y))
+        self.gameDisplay.blit(self.ant_layer, (-1 * self.cam_x, -1 * self.cam_y))
         pygame.display.update()
