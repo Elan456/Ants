@@ -5,7 +5,8 @@ blue = (0, 0, 255)
 
 
 class EntrancePoint:
-    def __init__(self, game, x=None, y=None):
+    def __init__(self, game, colony, x=None, y=None):
+        self.colony = colony
         if x is None or y is None:
             """Random location decision"""
             self.x = random.randint(0, game.w_width)
