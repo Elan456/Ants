@@ -20,6 +20,7 @@ class Game:
     """
 
     def __init__(self):
+
         self.cam_x = 0
         self.cam_y = 0
 
@@ -32,6 +33,12 @@ class Game:
         self.w_width = 1200
         self.w_height = 700
 
+        """List of all the ants"""
+        self.lAnts = []
+
+        """The quadtree for all the ants"""
+        self.qAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
+
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
         self.ant_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
@@ -39,12 +46,10 @@ class Game:
         self.pheromone_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
 
 
-
-
     def reset_layers(self):
         self.ant_layer.fill(black)
         self.ground_layer.fill(black)
-        self.gameDisplay.fill(black)
+        self.gameDisplay.fill((255, 255, 255))
 
     def draw_world_boundaries(self):
         pygame.draw.rect(self.ground_layer, (255, 0, 0), [0, 0, self.w_width, self.w_height], 4)
