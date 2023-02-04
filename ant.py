@@ -93,7 +93,7 @@ class House(Worker):
 
     def draw(self, game):
         """Draws a worker ant at this location"""
-        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x, self.y), self.direction)
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
 
 
 class Tunneler(House):
@@ -138,9 +138,9 @@ class Forager(Worker):
 
             # Movement
             self.direction += random.randrange(-100, 100, 1) / 1000
-            pygame.draw.circle(game.ant_layer, (0, 0, 255), (self.x, self.y), 3)
-            pygame.draw.line(game.ant_layer, (0, 255, 0), (self.x, self.y), (self.x + m.cos(self.direction) * 10,
-                                                                             self.y + m.sin(self.direction) * 10))
+            pygame.draw.circle(game.ant_layer, (0, 0, 255), (self.x - game.cam_x, self.y - game.cam_y), 3)
+            pygame.draw.line(game.ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), (self.x + m.cos(self.direction) * 10 - game.cam_x,
+                                                                             self.y + m.sin(self.direction) * 10- game.cam_y))
             self.move(game.w_width, game.w_height)
 
         if self.state == "returning":
@@ -155,7 +155,7 @@ class Forager(Worker):
                 self.tether.pop(-1)
 
     def draw(self, game):
-        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x, self.y), math.degrees(self.direction + math.pi / 2))
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), math.degrees(self.direction + math.pi / 2))
 
 
 class Warriors(Worker):
@@ -164,4 +164,4 @@ class Warriors(Worker):
 
     def draw(self, game):
         """Draws a warrior ant"""
-        center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x, self.y), self.direction)
+        center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
