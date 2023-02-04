@@ -21,7 +21,7 @@ def _loopallchildren(parent):
 def run_sim():
     game.entrance_points.append(EntrancePoint(game, 1, 700, 500))
     for _ in range(ANT_COUNT):
-        game.lAnts.append(Forager(game.entrance_points[0].x,
+        game.groundLAnts.append(Forager(game.entrance_points[0].x,
                                   game.entrance_points[0].y,
                                   1))
 
@@ -31,7 +31,7 @@ def run_sim():
     while True:
         game.reset_layers()
         game.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=5)
-        for ant in game.lAnts:
+        for ant in game.groundLAnts:
             game.qAnts.insert(ant, bbox=[ant.x - 1, ant.y - 1, ant.x + 1, ant.y + 1])
             ant.update(game.food_pheromones, game)
             ant.draw(game)
