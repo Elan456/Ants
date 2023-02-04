@@ -2,6 +2,17 @@ import pygame
 import numpy as np
 import math as m
 
+WARRIOR_IMAGE = pygame.image.load("images\\Soldier_Ant.png")
+QUEEN_IMAGE = pygame.image.load("images\\Queen_Ant.png")
+WORKER_IMAGE = pygame.image.load("images\\Worker_Ant.png")
+
+
+def center_rotate_blit(surface, image, top_left, angle):
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center=image.get_rect(topleft=top_left).center)
+
+    surface.blit(rotated_image, new_rect)
+
 
 class Ant:
     def __init__(self, x, y, colony, direction=0, speed=1, energy=100, food=0, health=100):
@@ -22,8 +33,8 @@ class Ant:
 
 class Queen(Ant):
 
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, colony):
+        super().__init__(x, y, colony)
 
     def lay_eggs(self):
         """
@@ -32,8 +43,16 @@ class Queen(Ant):
         """
         self.energy -= 10
 
+    def draw(self, game):
+        """Draws a queen ant at this location"""
+        center_rotate_blit(game.ant_layer, QUEEN_IMAGE, (self.x, self.y), self.direction)
+
 
 class Worker(Ant):
+    """
+    Abstract worker class
+    """
+
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
@@ -49,7 +68,8 @@ class Worker(Ant):
         self.y += m.sin(self.direction) * self.speed
 
     def drop_pheromone(self, type):
-        """Drops a pheromone of a specfic type"""
+        """Drops a pheromone of a specific type"""
+        pass
 
 
 class House(Worker):
@@ -58,22 +78,32 @@ class House(Worker):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
+    def draw(self, game):
+        """Draws a worker ant at this location"""
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x, self.y), self.direction)
+
 
 class Tunneler(House):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
 
-class Nurses(House):
+class Nurse(House):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
 
-class Foragers(Worker):
+class Forager(Worker):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
+    def draw(self, game):
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x, self.y), self.direction)
 
 class Warriors(Worker):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
+
+    def draw(self, game):
+        """Draws a warrior ant"""
+        center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x, self.y), self.direction)
