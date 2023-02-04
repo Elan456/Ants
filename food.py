@@ -13,7 +13,7 @@ class Food:
         self.radius = math.sqrt(self.size)
 
     def draw(self, game):
-        pygame.draw.circle(game.ground_layer, green, (self.x, self.y), math.sqrt(self.size))
+        pygame.draw.circle(game.ground_layer, green, (self.x - game.cam_x, self.y - game.cam_y), math.sqrt(self.size))
 
     def eat(self):
         self.size -= 1

@@ -16,4 +16,4 @@ class EntrancePoint:
             self.y = y
 
     def draw(self, game):
-        pygame.draw.circle(game.ground_layer, blue, (self.x, self.y), 25)
+        pygame.draw.circle(game.ground_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)

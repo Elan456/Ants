@@ -8,6 +8,7 @@ pygame.init()
 
 clock = pygame.time.Clock()
 
+CAM_SPEED = 50
 
 def normalize(x):
     magnitude = np.linalg.norm(x)
@@ -35,8 +36,8 @@ class Game:
         self.d_width = 1500
         self.d_height = 900
 
-        self.w_width = 800
-        self.w_height = 800
+        self.w_width = 5000
+        self.w_height = 5000
 
         """Nest list"""
         self.entrance_points = []
@@ -44,43 +45,32 @@ class Game:
         self.food = []
 
         """List of all the ants"""
-        self.groundLAnts = []
-        self.undergroundLAnts = []
+        self.lAnts = []
 
         """The quadtree for all the ants"""
-        self.groundQAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
-        self.undergroundQAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
+        self.qAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
 
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
         self.ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
         self.ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
         self.pheromone_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        self.underground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        self.underground_ant = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        self.debug_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
 
         self.food_pheromones = Pheromone("food", self)
         self.fight_pheromones = Pheromone("fight", self)
 
         self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
 
-        """Underground"""
-        self.underground = True
-
     def reset_layers(self):
+        self.debug_layer.fill(black)
         self.ant_layer.fill(black)
         self.pheromone_layer.fill(black)
         self.ground_layer.fill(black)
-        if not self.underground:
-            self.gameDisplay.fill((255, 255, 255))
-        else:
-            self.gameDisplay.fill((53, 35, 21))
+        self.gameDisplay.fill((255, 255, 255))
 
     def draw_world_boundaries(self):
-        if not self.underground:
-            pygame.draw.rect(self.ground_layer, (255, 0, 0), [0, 0, self.w_width, self.w_height], 4)
-        else:
-            pygame.draw.rect(self.underground_layer, (255, 0, 0), [0, 0, self.w_width, self.w_height], 4)
+        pygame.draw.rect(self.ground_layer, (255, 0, 0), [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height], 4)
 
     def process_user_input_events(self):
         for event in pygame.event.get():
@@ -99,21 +89,17 @@ class Game:
         if keys[pygame.K_LEFT]:
             self.cam_m[0] -= 1
 
-        self.cam_m = normalize(self.cam_m)
+        self.cam_m = normalize(self.cam_m) * CAM_SPEED
 
         self.cam_x += self.cam_m[0]
         self.cam_y += self.cam_m[1]
 
     def display_display(self):
-        if not self.underground:
-            self.draw_world_boundaries()
-            self.gameDisplay.blit(self.pheromone_layer, (-1 * self.cam_x, -1 * self.cam_y))
-            self.gameDisplay.blit(self.ground_layer, (-1 * self.cam_x, -1 * self.cam_y))
-            self.gameDisplay.blit(self.ant_layer, (-1 * self.cam_x, -1 * self.cam_y))
-        else:
-            self.draw_world_boundaries()
-            self.gameDisplay.blit(self.underground_ant, (-1 * self.cam_x, -1 * self.cam_y))
-            self.gameDisplay.blit(self.underground_layer, (-1 * self.cam_x, -1 * self.cam_y))
+        self.draw_world_boundaries()
+        self.gameDisplay.blit(self.pheromone_layer, (0, 0))
+        self.gameDisplay.blit(self.ground_layer, (0, 0))
+        self.gameDisplay.blit(self.ant_layer, (0, 0))
+        self.gameDisplay.blit(self.debug_layer, (0, 0))
         self.fps_counter.set_text(str(int(clock.get_fps())))
         self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()

@@ -7,7 +7,7 @@ from pyqtree import Index
 
 game = Game()
 
-ANT_COUNT = 10
+ANT_COUNT = 100
 FOOD_COUNT = 50
 
 def _loopallchildren(parent):
@@ -19,7 +19,7 @@ def _loopallchildren(parent):
 
 
 def run_sim():
-    game.entrance_points.append(EntrancePoint(game, 1, 700, 500))
+    game.entrance_points.append(EntrancePoint(game, 1, 400, 400))
     for _ in range(ANT_COUNT):
         game.groundLAnts.append(Forager(game.entrance_points[0].x,
                                   game.entrance_points[0].y,
@@ -36,7 +36,7 @@ def run_sim():
             ant.update(game.food_pheromones, game)
             ant.draw(game)
 
-        game.food_pheromones.draw(game)
+        game.food_pheromones.update(game, do_draw=True)
 
         for f in game.food:
             f.draw(game)
@@ -46,11 +46,10 @@ def run_sim():
 
         game.process_user_input_events()
         """Draw all the things that should be seen"""
-        pygame.draw.circle(game.ant_layer, (255, 255, 255), (0, 0), 10)
 
-        for c in _loopallchildren(game.qAnts):
-            pygame.draw.rect(game.ant_layer, (0, 255, 0),
-                             [c.center[0] - c.width / 2, c.center[1] - c.height / 2, c.width, c.height], 1)
+        # for c in _loopallchildren(game.qAnts):
+        #     pygame.draw.rect(game.ant_layer, (0, 255, 0),
+        #                      [c.center[0] - c.width / 2, c.center[1] - c.height / 2, c.width, c.height], 1)
 
         game.display_display()
 
