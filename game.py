@@ -35,6 +35,8 @@ class Game:
 
         self.ant_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
         self.ground_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
+        self.pheromone_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
+
 
     def reset_layers(self):
         self.ant_layer.fill(black)
