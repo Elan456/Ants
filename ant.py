@@ -1,3 +1,6 @@
+import math
+import random
+
 import pygame
 import numpy as np
 import math as m
@@ -8,17 +11,18 @@ WORKER_IMAGE = pygame.image.load("images\\Worker_Ant.png")
 
 
 def center_rotate_blit(surface, image, top_left, angle):
-    rotated_image = pygame.transform.rotate(image, angle)
+    rotated_image = pygame.transform.rotate(image, -1 * angle)
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft=top_left).center)
 
     surface.blit(rotated_image, new_rect)
 
 
 class Ant:
-    def __init__(self, x, y, colony, direction=0, speed=1, energy=100, food=0, health=100):
+    def __init__(self, x, y, colony, direction=None, speed=1, energy=100, food=0, health=100):
         self.colony = colony
         self.speed = speed
-        self.direction = direction
+        if direction is None:
+            self.direction = random.randrange(0, 100) / (2 * m.pi)
         self.health = health
         self.food = food
         self.energy = energy
@@ -96,9 +100,43 @@ class Nurse(House):
 class Forager(Worker):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
+        self.state = "searching"
+        self.distance_searched = 0
+        self.tether = []
+
+    def update(self, food_pheromone_grid, game):
+        self.energy -= .1
+        if self.state == "searching":
+            """
+                Keep track of how far /
+                Check low energy /
+                Check for strong pheromone nearby and start following it
+            """
+            self.tether.append((self.x, self.y))
+            self.distance_searched += 1
+            if self.distance_searched > self.energy * 10 + 10:
+                # Start returning
+                self.state = "returning"
+
+            # Movement
+            self.direction += random.randrange(-100, 100, 1) / 1000
+            pygame.draw.circle(game.ant_layer, (0, 0, 255), (self.x, self.y), 3)
+            pygame.draw.line(game.ant_layer, (0, 255, 0), (self.x, self.y), (self.x + m.cos(self.direction) * 10,
+                                                                             self.y + m.sin(self.direction) * 10))
+            self.move()
+
+        if self.state == "returning":
+            food_pheromone_grid.lay_down(self.x, self.y)
+            if len(self.tether) < 1:
+                self.state = "done"
+            else:
+                nx, ny = self.tether[-1]
+                self.direction = m.atan2(ny - self.y, nx - self.x)
+                self.x, self.y = nx, ny
+                self.tether.pop(-1)
 
     def draw(self, game):
-        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x, self.y), self.direction)
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x, self.y), math.degrees(self.direction + math.pi / 2))
 
 class Warriors(Worker):
     def __init__(self, x, y, colony):
