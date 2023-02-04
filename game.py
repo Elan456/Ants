@@ -30,13 +30,15 @@ class Game:
         self.cam_y = 0
 
         self.cam_m = np.zeros(2)
-        print(self.cam_m)
 
         self.d_width = 1500
         self.d_height = 900
 
-        self.w_width = 1200
-        self.w_height = 700
+        self.w_width = 800
+        self.w_height = 800
+
+        """Nest list"""
+        self.entrance_points = []
 
         self.food = []
 
@@ -48,9 +50,9 @@ class Game:
 
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
-        self.ant_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
-        self.ground_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
-        self.pheromone_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
+        self.ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        self.ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        self.pheromone_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
 
         self.food_pheromones = Pheromone("food", self)
         self.fight_pheromones = Pheromone("fight", self)
