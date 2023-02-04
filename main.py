@@ -6,6 +6,7 @@ d_height = 500
 
 game = Game()
 
+
 def run_sim():
     while True:
         game.process_user_input_events()
