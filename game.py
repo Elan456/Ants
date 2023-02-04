@@ -1,7 +1,12 @@
 import pygame
 import numpy as np
+from pheromone import Pheromone
 from pyqtree import Index
+from helpers import Text
 
+pygame.init()
+
+clock = pygame.time.Clock()
 
 def normalize(x):
     magnitude = np.linalg.norm(x)
@@ -27,11 +32,13 @@ class Game:
         self.cam_m = np.zeros(2)
         print(self.cam_m)
 
-        self.d_width = 1000
-        self.d_height = 500
+        self.d_width = 1500
+        self.d_height = 900
 
         self.w_width = 1200
         self.w_height = 700
+
+        self.food = []
 
         """List of all the ants"""
         self.lAnts = []
@@ -45,9 +52,14 @@ class Game:
         self.ground_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
         self.pheromone_layer = pygame.Surface((self.w_width, self.w_height), pygame.SRCALPHA)
 
+        self.food_pheromones = Pheromone("food", self)
+        self.fight_pheromones = Pheromone("fight", self)
+
+        self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
 
     def reset_layers(self):
         self.ant_layer.fill(black)
+        self.pheromone_layer.fill(black)
         self.ground_layer.fill(black)
         self.gameDisplay.fill((255, 255, 255))
 
@@ -78,6 +90,10 @@ class Game:
 
     def display_display(self):
         self.draw_world_boundaries()
+        self.gameDisplay.blit(self.pheromone_layer, (-1 * self.cam_x, -1 * self.cam_y))
         self.gameDisplay.blit(self.ground_layer, (-1 * self.cam_x, -1 * self.cam_y))
         self.gameDisplay.blit(self.ant_layer, (-1 * self.cam_x, -1 * self.cam_y))
+        self.fps_counter.set_text(str(int(clock.get_fps())))
+        self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
+        clock.tick(60)

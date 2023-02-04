@@ -1,27 +1,26 @@
 import pygame
 
+GRID_SIZE = 5
+
+def color_from_strength(x):
+    return (255, 255 - x * 2.55, 255 - x * 2.55)
+
 
 class Pheromone:
-    def __init__(self, x, y, type):
-        self.y = y
-        self.x = x
+    def __init__(self, type, game):
         self.type = type
-        self.previous = None
-        self.next = None
-        self.strength = 100
-        self.active = True
+        self.grid = [[0 for _ in range(game.w_width // GRID_SIZE)] for _ in range(game.w_height // GRID_SIZE)]
 
-        if self.type == "fight":
-            self.color = (255, 0, 0)
-        elif self.type == "food":
-            self.color = (0, 255, 0)
-        elif self.type == "home":
-            self.color = (0, 0, 255)
-
-    def update(self):
-        self.strength -= 1
-        if self.strength <= 0:
-            self.active = False
+    def lay_down(self, x, y):
+        tx = int((x + 15) / GRID_SIZE)
+        ty = int((y + 15) / GRID_SIZE)
+        try:
+            if self.grid[ty][tx] < 95:
+                self.grid[ty][tx] += 5
+        except IndexError:
+            print("!Warning!:", x, y,"is off the map")
 
     def draw(self, game):
-        pygame.draw.circle(game.pheromone_layer, self.color, (self.x, self.y), 3)
+        for y in range(len(self.grid)):
+            for x in range(len(self.grid[0])):
+                pygame.draw.rect(game.pheromone_layer, color_from_strength(self.grid[y][x]), [x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE])
