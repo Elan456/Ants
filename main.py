@@ -2,12 +2,13 @@ import pygame
 from game import Game
 from food import Food
 from ant import *
+from forager import Forager
 from nest import EntrancePoint
 from pyqtree import Index
 
 game = Game()
 
-ANT_COUNT = 100
+ANT_COUNT = 25
 FOOD_COUNT = 50
 
 def _loopallchildren(parent):

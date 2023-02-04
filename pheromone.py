@@ -34,7 +34,7 @@ class Pheromone:
         self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10)
         print(len(all_cells))
         for c in all_cells:
-            c.strength -= .1
+            c.strength -= .05
             if c.strength > 0:
                 if do_draw:
                     pygame.draw.rect(game.pheromone_layer, color_from_strength(c.strength),

@@ -27,7 +27,7 @@ class Game:
     """
 
     def __init__(self):
-        self.underground = True
+        self.underground = False
 
         self.cam_x = 0
         self.cam_y = 0
