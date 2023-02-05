@@ -54,6 +54,15 @@ class Game:
         self.lAnts = []
         self.ulAnts = []
 
+        self.ants_killed = {0: 0,
+                       1: 0,
+                       2: 0}
+        yspace = 25
+        self.stats_text = [Text(self.d_width - 125, self.d_height - 100, "Ants Lost", black, 30, "r"),
+                           Text(self.d_width - 125, self.d_height - 100 + yspace, "Colony 1: " + str(self.ants_killed[0]), black, 30, "r"),
+                           Text(self.d_width - 125, self.d_height - 100 + yspace * 2, "Colony 2: " + str(self.ants_killed[1]), black, 30, "r"),
+                           Text(self.d_width - 125, self.d_height - 100 + yspace * 3, "Colony 3: " + str(self.ants_killed[2]), black, 30, "r")]
+
         """The quadtree for all the ants"""
         self.qAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
         self.uQAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
@@ -67,6 +76,8 @@ class Game:
         self.ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
         self.pheromone_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
 
+        self.ui_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+
         self.underground_ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
         self.underground_ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
         self.underground_entrance_point_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
@@ -78,7 +89,7 @@ class Game:
 
         self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
 
-        self.toggle_underground_button = Button(self.debug_layer, [self.d_width - 150, 0, 150, 50], "Toggle View",
+        self.toggle_underground_button = Button(self.ui_layer, [self.d_width - 150, 0, 150, 50], "Toggle View",
                                                 (0, 0, 0), 30, self.toggle_underground, (0, 0, 200), (0, 0, 255))
 
     def toggle_underground(self):
@@ -89,6 +100,7 @@ class Game:
         self.ant_layer.fill(black)
         self.pheromone_layer.fill(black)
         self.ground_layer.fill(black)
+        self.ui_layer.fill(black)
 
         self.underground_ant_layer.fill(black)
         self.underground_ground_layer.fill(black)
@@ -134,16 +146,21 @@ class Game:
         mouse = pygame.mouse.get_pos(), pygame.mouse.get_pressed()
         self.draw_world_boundaries()
         self.toggle_underground_button.update(mouse)
+        for i, t in enumerate(self.stats_text):
+            if i > 0:
+                t.set_text("Colony " + str(i) + ": " + str(self.ants_killed[i - 1]))
+            t.draw(self.ui_layer)
         if self.underground:
             self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
             self.gameDisplay.blit(self.underground_entrance_point_layer, (0, 0))
-            self.gameDisplay.blit(self.pheromone_layer, (0, 0))
+            # self.gameDisplay.blit(self.pheromone_layer, (0, 0))
             self.gameDisplay.blit(self.underground_ant_layer, (0, 0))
         else:
             self.gameDisplay.blit(self.pheromone_layer, (0, 0))
             self.gameDisplay.blit(self.ground_layer, (0, 0))
             self.gameDisplay.blit(self.ant_layer, (0, 0))
-        self.gameDisplay.blit(self.debug_layer, (0, 0))
+        self.gameDisplay.blit(self.ui_layer, (0, 0))
+        # self.gameDisplay.blit(self.debug_layer, (0, 0))
         self.fps_counter.set_text(str(int(clock.get_fps())))
         self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
