@@ -26,6 +26,7 @@ class Ant:
         self.health = health
         self.food = food
         self.energy = energy
+        self.color = (0, 0, 0)
         self.y = y
         self.x = x
 

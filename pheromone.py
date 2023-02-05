@@ -32,9 +32,8 @@ class Pheromone:
     def update(self, game, do_draw=False):
         all_cells = self.grid.intersect(bbox=[0, 0, game.w_width, game.w_height])
         self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10)
-        print(len(all_cells))
         for c in all_cells:
-            c.strength -= .05
+            c.strength -= .03
             if c.strength > 0:
                 if do_draw:
                     pygame.draw.rect(game.pheromone_layer, color_from_strength(c.strength),
@@ -42,8 +41,8 @@ class Pheromone:
                 self.grid.insert(c, bbox=[c.x, c.y, c.x + GRID_SIZE, c.y + GRID_SIZE])
 
     def lay_down(self, x, y):
-        tx = int((x + 15) / GRID_SIZE) * GRID_SIZE
-        ty = int((y + 15) / GRID_SIZE) * GRID_SIZE
+        tx = int(x / GRID_SIZE) * GRID_SIZE
+        ty = int(y / GRID_SIZE) * GRID_SIZE
         l = self.grid.intersect(bbox=[tx + 1, ty + 1, tx + GRID_SIZE - 1, ty + GRID_SIZE - 1])
         if len(l) == 0:  # No pheromone there right now
             self.grid.insert(PheromoneGrid(tx, ty), bbox=[tx, ty, tx + GRID_SIZE, ty + GRID_SIZE])

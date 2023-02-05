@@ -4,6 +4,9 @@ import random
 blue = (0, 0, 255)
 tortilla = (154, 123, 79)
 
+team_colors = [(0, 0, 255),
+               (37, 154, 100)]
+
 
 class EntrancePoint:
     def __init__(self, game, colony, x=None, y=None):
@@ -23,5 +26,3 @@ class EntrancePoint:
 
         else:
             pygame.draw.circle(game.ground_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)
-
-
