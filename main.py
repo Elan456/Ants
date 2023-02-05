@@ -21,6 +21,7 @@ def _loopallchildren(parent):
 
 
 def run_sim():
+
     game.entrance_points.append(EntrancePoint(game, 0, 400, 400))
     game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
     for _ in range(ANT_COUNT):
@@ -51,8 +52,9 @@ def run_sim():
             if not game.underground:
                 ant.draw(game)
             if not ant.active:
-                if isinstance(ant, Forager):
-                    print("Forage killed")
+                game.ants_killed[ant.colony] += 1
+                # if isinstance(ant, Forager):
+                #     print("Forage killed")
                 game.lAnts.remove(ant)
 
         old_ulAnts = game.ulAnts.copy()
