@@ -6,8 +6,14 @@ import numpy as np
 import math as m
 
 WARRIOR_IMAGE = pygame.image.load("images\\Soldier_Ant.png")
+RED_WARRIOR_IMAGE = pygame.image.load("images\\Red_Soldier_Ant.png")
+PURPLE_WARRIOR_IMAGE = pygame.image.load("images\\Purple_Soldier_Ant.png")
 QUEEN_IMAGE = pygame.image.load("images\\Queen_Ant.png")
+RED_QUEEN_IMAGE = pygame.image.load("images\\Red_Queen_Ant.png")
+PURPLE_QUEEN_IMAGE = pygame.image.load("images\\Purple_Queen_Ant.png")
 WORKER_IMAGE = pygame.image.load("images\\Worker_Ant.png")
+RED_WORKER_IMAGE = pygame.image.load("images\\Red_Worker_Ant.png")
+PURPLE_WORKER_IMAGE = pygame.image.load("images\\Purple_Worker_Ant.png")
 
 
 def center_rotate_blit(surface, image, top_left, angle):
