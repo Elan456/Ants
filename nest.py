@@ -23,6 +23,12 @@ class EntrancePoint:
         if game.underground:
             # pygame.draw.rect(game.underground_ground_layer, tortilla, [self.x - 75 - game.cam_x, self.y - 75 - game.cam_y, 150, 150])
             pygame.draw.circle(game.underground_entrance_point_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)
+            pygame.draw.circle(game.underground_entrance_point_layer, (0, 0, 0), (self.x - game.cam_x, self.y - game.cam_y),
+                               10)
 
         else:
             pygame.draw.circle(game.ground_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)
+            pygame.draw.circle(game.ground_layer, (0, 0, 0),
+                               (self.x - game.cam_x, self.y - game.cam_y),
+                               10)
+

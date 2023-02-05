@@ -132,6 +132,7 @@ class Game:
         if self.underground:
             self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
             self.gameDisplay.blit(self.underground_entrance_point_layer, (0, 0))
+            self.gameDisplay.blit(self.pheromone_layer, (0, 0))
             self.gameDisplay.blit(self.underground_ant_layer, (0, 0))
         else:
             self.gameDisplay.blit(self.pheromone_layer, (0, 0))

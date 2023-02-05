@@ -2,26 +2,9 @@ import math as m
 import random
 import numpy as np
 import pygame
-from ant import Worker, center_rotate_blit, WORKER_IMAGE
-
-def normalize(x):
-    magnitude = np.linalg.norm(x)
-    if magnitude > 0:
-        return x / np.linalg.norm(x)
-    else:
-        return np.zeros(2)
+from ant import Worker, center_rotate_blit, WORKER_IMAGE, normalize, check_if_in_front
 
 
-def check_if_in_front(my_loc, target_loc, my_direction):
-    small_ahead = my_loc + my_direction
-    small_behind = my_loc
-
-    # D to target
-    d = normalize(target_loc - my_loc)
-    small_to_target = my_loc + d
-
-
-    return m.dist(small_behind, small_to_target) > m.dist(small_ahead, small_to_target)
 
 
 class Forager(Worker):
@@ -33,33 +16,13 @@ class Forager(Worker):
         self.tether = []
         self.turning_direction = 1
 
-    def get_strongest_pheromones_in_front(self, game, food_pheromone_grid):
-        qBox = [self.x - 10, self.y - 10, self.x + 10, self.y + 10]
-        pygame.draw.rect(game.debug_layer, (255, 0, 0), [self.x - 10 - game.cam_x, self.y - 10 - game.cam_y, 20, 20], 1)
-        test_pheromones = food_pheromone_grid.grid.intersect(bbox=qBox)
-        my_direction = [m.cos(self.direction), m.sin(self.direction)]
-
-        in_front_pheromones = []
-        for p in test_pheromones:
-            if check_if_in_front(np.array([self.x, self.y]), np.array([p.x, p.y]), my_direction):
-                in_front_pheromones.append(p)
-
-        if len(in_front_pheromones) > 0:
-            strongest = self.get_strongest(in_front_pheromones)
-            return strongest
-        else:
-            return None
-
-    @staticmethod
-    def get_strongest(pheromones):
-        strongest = pheromones[0]
-        for i in pheromones:
-            if i.strength > strongest.strength:
-                strongest = i
-        return strongest
 
     def update(self, food_pheromone_grid, game):
         self.energy -= .1
+
+        for e in game.entrance_points:
+            if e.colony == self.colony and m.dist((self.x, self.y), (e.x, e.y)) < 20:
+                self.tether = []
 
         if self.state == "searching" or self.state == "following trail":
             self.tether.append((self.x, self.y))
@@ -93,7 +56,6 @@ class Forager(Worker):
                 Checking if I found food
             """
 
-
             # Movement
             self.direction += random.randrange(0, 100, 1) / 1000 * self.turning_direction
             if random.randint(0, 10) == 0:
@@ -117,15 +79,14 @@ class Forager(Worker):
                 self.direction = m.atan2(strongest.y - self.y, strongest.x - self.x)
             self.move(game.w_width, game.w_height)
 
-
         if self.state == "returning":
-            if len(self.tether) < 1 or m.dist((self.x, self.y), self.tether[0]) < 10:
+            if len(self.tether) < 1:
                 """Made it back to the nest"""
                 self.state = "searching"
                 self.energy = 100
                 self.found_food = False
                 self.distance_searched = 0
-                self.tether = []
+                # self.tether = []
             else:
                 if self.found_food:
                     food_pheromone_grid.lay_down(self.x, self.y)
@@ -142,5 +103,5 @@ class Forager(Worker):
 
         if self.found_food:
             pygame.draw.circle(game.ant_layer, (128, 128, 0), (self.x - game.cam_x, self.y - game.cam_y), 4)
-        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - 10 - game.cam_x, self.y - 15 - game.cam_y),
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))

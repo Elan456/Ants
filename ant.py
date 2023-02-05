@@ -12,6 +12,7 @@ QUEEN_IMAGE = pygame.image.load("images\\Queen_Ant.png")
 RED_QUEEN_IMAGE = pygame.image.load("images\\Red_Queen_Ant.png")
 PURPLE_QUEEN_IMAGE = pygame.image.load("images\\Purple_Queen_Ant.png")
 WORKER_IMAGE = pygame.image.load("images\\Worker_Ant.png")
+WORKER_IMAGE = pygame.transform.scale(WORKER_IMAGE, (12, 20))
 RED_WORKER_IMAGE = pygame.image.load("images\\Red_Worker_Ant.png")
 PURPLE_WORKER_IMAGE = pygame.image.load("images\\Purple_Worker_Ant.png")
 
@@ -21,6 +22,25 @@ def center_rotate_blit(surface, image, top_left, angle):
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft=top_left).center)
 
     surface.blit(rotated_image, new_rect)
+
+
+def normalize(x):
+    magnitude = np.linalg.norm(x)
+    if magnitude > 0:
+        return x / np.linalg.norm(x)
+    else:
+        return np.zeros(2)
+
+
+def check_if_in_front(my_loc, target_loc, my_direction):
+    small_ahead = my_loc + my_direction
+    small_behind = my_loc
+
+    # D to target
+    d = normalize(target_loc - my_loc)
+    small_to_target = my_loc + d
+
+    return m.dist(small_behind, small_to_target) > m.dist(small_ahead, small_to_target)
 
 
 class Ant:
@@ -69,6 +89,31 @@ class Worker(Ant):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
+    @staticmethod
+    def get_strongest(pheromones):
+        strongest = pheromones[0]
+        for i in pheromones:
+            if i.strength > strongest.strength:
+                strongest = i
+        return strongest
+
+    def get_strongest_pheromones_in_front(self, game, food_pheromone_grid, half_width=10):
+        qBox = [self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width]
+        pygame.draw.rect(game.debug_layer, (255, 0, 0), [self.x - half_width - game.cam_x, self.y - half_width - game.cam_y, half_width * 2, half_width * 2], 1)
+        test_pheromones = food_pheromone_grid.grid.intersect(bbox=qBox)
+        my_direction = [m.cos(self.direction), m.sin(self.direction)]
+
+        in_front_pheromones = []
+        for p in test_pheromones:
+            if check_if_in_front(np.array([self.x, self.y]), np.array([p.x, p.y]), my_direction):
+                in_front_pheromones.append(p)
+
+        if len(in_front_pheromones) > 0:
+            strongest = self.get_strongest(in_front_pheromones)
+            return strongest
+        else:
+            return None
+
     def feed_friends(self, ants):
         """
         Find nearby friends that are hungry and feed them occurs when an ant has a surplus of food
@@ -106,8 +151,7 @@ class House(Worker):
         pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
                          (self.x + m.cos(self.direction) * 10 - game.cam_x,
                           self.y + m.sin(self.direction) * 10 - game.cam_y))
-        #center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
-
+        # center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
 
 
 class Nurse(House):

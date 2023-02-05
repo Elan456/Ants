@@ -29,7 +29,6 @@ class Tunneler(House):
         if shortest_distance > 200:
             game.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
 
-
     def tunnel(self, game):
         """
         Will try to dig a tunnel ahead of them, otherwise will just move forwards
@@ -53,29 +52,45 @@ class Tunneler(House):
         """
         Checking if we passed an entrance point to reset the tether
         """
+        # print(self.state)
 
         for e in game.entrance_points:
             if e.colony == self.colony and m.dist((self.x, self.y), (e.x, e.y)) < 20:
                 self.tether = []
 
+        if self.state == "random":
+            if not self.holding_dirt:
+                self.direction += random.randint(-100, 100) / 200
+                self.tunnel(game)
+            else:
+                self.state = "returning"
+
+            """Trying to start actual tunneling towards the pheromones"""
+            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=50)
+            if strongest is not None:
+                self.state = "tunneling"
 
         if self.state == "tunneling":
-            self.direction = self.personal_dig_direction
-            if self.max_dig < 1:  # We've dug as far as we should in this direction
-                self.personal_dig_direction = random.randint(0, 100) % (2 * m.pi)
-                self.max_dig = random.randint(3, 6)
+            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=50)
+            if strongest is None:
+                self.state = "random"
+            else:
+                self.direction = m.atan2(strongest.y - self.y, strongest.x - self.x)
+
+
+            # self.move(game.w_width, game.w_height)
+            # self.direction = self.personal_dig_direction
+            # if self.max_dig < 1:  # We've dug as far as we should in this direction
+            #     self.personal_dig_direction = random.randint(0, 100) % (2 * m.pi)
+            #     self.max_dig = random.randint(3, 6)
+
+            """Tunnels if not holding dirt otherwise goes into return state"""
 
             pygame.draw.circle(game.debug_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 2)
             if not self.holding_dirt:
 
                 self.tunnel(game)
             else:
-                self.state = "returning"
-            """Tether connects them to the last entrance point they have been near"""
-            self.tether.append((self.x, self.y))
-            self.distance_stepped += 1
-            if self.distance_stepped > self.energy * 10 + 10:
-                # Start returning
                 self.state = "returning"
 
         if self.state == "returning":
@@ -90,8 +105,15 @@ class Tunneler(House):
                 self.state = "tunneling"
                 self.holding_dirt = False
             else:
-                self.move(game.w_width, game.w_height)
                 nx, ny = self.tether[-1]
                 self.direction = m.atan2(ny - self.y, nx - self.x)
                 self.x, self.y = nx, ny
                 self.tether.pop(-1)
+
+        else:
+            """Tether connects them to the last entrance point they have been near"""
+            self.tether.append((self.x, self.y))
+            self.distance_stepped += 1
+            if self.distance_stepped > self.energy * 10 + 10:
+                # Start returning
+                self.state = "returning"
