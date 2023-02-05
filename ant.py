@@ -24,14 +24,16 @@ def center_rotate_blit(surface, image, top_left, angle):
 
 
 class Ant:
-    def __init__(self, x, y, colony, direction=None, speed=1, energy=100, food=0, health=100):
+    def __init__(self, x, y, colony, direction=None, speed=1, energy=0, food=0, health=100):
+        if energy == 0:
+            self.energy = random.randint(50, 200)
         self.colony = colony
         self.speed = speed
         if direction is None:
             self.direction = random.randrange(0, 100) / (2 * m.pi)
         self.health = health
         self.food = food
-        self.energy = energy
+
         self.color = (0, 0, 0)
         self.y = y
         self.x = x
@@ -100,7 +102,11 @@ class House(Worker):
 
     def draw(self, game):
         """Draws a worker ant at this location"""
-        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
+        pygame.draw.circle(game.underground_ant_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 3)
+        pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
+                         (self.x + m.cos(self.direction) * 10 - game.cam_x,
+                          self.y + m.sin(self.direction) * 10 - game.cam_y))
+        #center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
 
 
 

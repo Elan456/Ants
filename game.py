@@ -2,7 +2,8 @@ import pygame
 import numpy as np
 from pheromone import Pheromone
 from pyqtree import Index
-from helpers import Text
+from helpers import Text, Button
+from tunnel_system import TunnelSystem
 
 pygame.init()
 
@@ -29,6 +30,7 @@ class Game:
     def __init__(self):
         self.underground = True
 
+
         self.cam_x = 0
         self.cam_y = 0
 
@@ -54,7 +56,7 @@ class Game:
         self.uQAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
 
         """Tunnel stuff"""
-        self.tunnels = Index(bbox=[0, 0, self.w_width, self.w_height])
+        self.tunnel_system = TunnelSystem(self)
 
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
@@ -64,6 +66,7 @@ class Game:
 
         self.underground_ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
         self.underground_ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        self.underground_entrance_point_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
 
         self.debug_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
 
@@ -71,6 +74,12 @@ class Game:
         self.fight_pheromones = Pheromone("fight", self)
 
         self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
+
+        self.toggle_underground_button = Button(self.debug_layer, [self.d_width - 150, 0, 150, 50], "Toggle View",
+                                                (0, 0, 0), 30, self.toggle_underground, (0, 0, 200), (0, 0, 255))
+
+    def toggle_underground(self):
+        self.underground = not self.underground
 
     def reset_layers(self):
         self.debug_layer.fill(black)
@@ -80,6 +89,7 @@ class Game:
 
         self.underground_ant_layer.fill(black)
         self.underground_ground_layer.fill(black)
+        self.underground_entrance_point_layer.fill(black)
 
         if self.underground:
             self.gameDisplay.fill((53, 35, 21))
@@ -116,15 +126,18 @@ class Game:
         self.cam_y += self.cam_m[1]
 
     def display_display(self):
+        mouse = pygame.mouse.get_pos(), pygame.mouse.get_pressed()
         self.draw_world_boundaries()
+        self.toggle_underground_button.update(mouse)
         if self.underground:
             self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
+            self.gameDisplay.blit(self.underground_entrance_point_layer, (0, 0))
             self.gameDisplay.blit(self.underground_ant_layer, (0, 0))
         else:
             self.gameDisplay.blit(self.pheromone_layer, (0, 0))
             self.gameDisplay.blit(self.ground_layer, (0, 0))
             self.gameDisplay.blit(self.ant_layer, (0, 0))
-            self.gameDisplay.blit(self.debug_layer, (0, 0))
+        self.gameDisplay.blit(self.debug_layer, (0, 0))
         self.fps_counter.set_text(str(int(clock.get_fps())))
         self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
