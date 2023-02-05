@@ -3,6 +3,7 @@ import random
 import numpy as np
 import pygame
 from ant import Worker, center_rotate_blit, WORKER_IMAGE, normalize, check_if_in_front
+from warrior import Warrior
 
 
 
@@ -18,7 +19,8 @@ class Forager(Worker):
         self.spooked = False
 
 
-    def update(self, food_pheromone_grid, game):
+    def update(self, game):
+        food_pheromone_grid = game.food_pheromones
         self.energy -= .1
 
         for e in game.entrance_points:
@@ -92,6 +94,12 @@ class Forager(Worker):
                 self.energy = 100
                 self.found_food = False
                 self.distance_searched = 0
+                if self.spooked:
+                    # Spawn a warrior ant
+                    new_warrior = Warrior(self.x, self.y, self.colony, False)
+                    new_warrior.direction = self.direction + m.pi
+                    game.lAnts.append(new_warrior)
+                self.spooked = False
                 # self.tether = []
             else:
                 if self.found_food:

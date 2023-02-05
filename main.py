@@ -10,7 +10,7 @@ from tunneler import Tunneler
 game = Game()
 
 ANT_COUNT = 25
-FOOD_COUNT = 100
+FOOD_COUNT = 10
 
 def _loopallchildren(parent):
     for child in parent.children:
@@ -44,16 +44,24 @@ def run_sim():
         game.reset_layers()
         game.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=5)
 
-        for ant in game.lAnts:
+        old_ants = game.lAnts.copy()
+        for ant in old_ants:
             game.qAnts.insert(ant, bbox=[ant.x - 1, ant.y - 1, ant.x + 1, ant.y + 1])
-            ant.update(game.food_pheromones, game)
+            ant.update(game)
             if not game.underground:
                 ant.draw(game)
+            if not ant.active:
+                if isinstance(ant, Forager):
+                    print("Forage killed")
+                game.lAnts.remove(ant)
 
-        for ant in game.ulAnts:
+        old_ulAnts = game.ulAnts.copy()
+        for ant in old_ulAnts:
             ant.update(game)
             if game.underground:
                 ant.draw(game)
+            if not ant.active:
+                game.ulAnts.remove(ant)
 
         game.food_pheromones.update(game, do_draw=True)
         game.fight_pheromones.update(game, do_draw=True)

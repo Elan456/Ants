@@ -113,10 +113,15 @@ class Worker(Ant):
                 strongest = i
         return strongest
 
-    def get_strongest_pheromones_in_front(self, game, food_pheromone_grid, half_width=10):
+    def get_strongest_pheromones_in_front(self, game, in_pheromone_system=None, half_width=10):
+        if in_pheromone_system is None:
+            pheromone_system = game.food_pheromones
+        else:
+            pheromone_system = in_pheromone_system
+
         qBox = [self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width]
         pygame.draw.rect(game.debug_layer, (255, 0, 0), [self.x - half_width - game.cam_x, self.y - half_width - game.cam_y, half_width * 2, half_width * 2], 1)
-        test_pheromones = food_pheromone_grid.grid.intersect(bbox=qBox)
+        test_pheromones = pheromone_system.grid.intersect(bbox=qBox)
         my_direction = [m.cos(self.direction), m.sin(self.direction)]
 
         in_front_pheromones = []
