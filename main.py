@@ -56,6 +56,7 @@ def run_sim():
                 ant.draw(game)
 
         game.food_pheromones.update(game, do_draw=True)
+        game.fight_pheromones.update(game, do_draw=True)
 
         for f in game.food:
             f.draw(game)

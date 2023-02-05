@@ -91,6 +91,20 @@ class Worker(Ant):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
+    def enemy_near_by(self, game, underground):
+        qBox = [self.x - 50, self.y - 50, self.x + 50, self.y + 50]
+        pygame.draw.rect(game.debug_layer, (0, 0, 255), [self.x - 50, self.y - 50, 100, 100], 1)
+        if underground:
+            nears = game.uQAnts.intersect(qBox)
+        else:
+            nears = game.qAnts.intersect(qBox)
+
+        for a in nears:
+            if a.colony != self.colony:
+                # Found an enemy any
+                return True
+        return False
+
     @staticmethod
     def get_strongest(pheromones):
         strongest = pheromones[0]

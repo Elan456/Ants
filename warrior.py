@@ -25,6 +25,7 @@ class Warrior(Worker):
         self.state = "follow trail"
         self.target = None
         self.steps = 0
+        self.tether = []
 
     def update(self, game):
         """
@@ -94,12 +95,7 @@ class Warrior(Worker):
 
             if len(self.tether) < 1:
                 """Made it back to the nest"""
-                # self.state = "tunneling"
-                self.energy = 100
-                self.distance_stepped = 0
-                self.tether = []
-                self.state = "tunneling"
-                self.holding_dirt = False
+                self.active = False
             else:
                 nx, ny = self.tether[-1]
                 self.direction = m.atan2(ny - self.y, nx - self.x)

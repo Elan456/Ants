@@ -15,6 +15,7 @@ class Forager(Worker):
         self.distance_searched = 0
         self.tether = []
         self.turning_direction = 1
+        self.spooked = False
 
 
     def update(self, food_pheromone_grid, game):
@@ -25,6 +26,11 @@ class Forager(Worker):
                 self.tether = []
 
         if self.state == "searching" or self.state == "following trail":
+            """Check for spooked"""
+            if self.enemy_near_by(game, False):
+                self.spooked = True
+                self.state = "returning"
+
             self.tether.append((self.x, self.y))
             self.distance_searched += 1
             if self.distance_searched > self.energy * 10 + 10:
@@ -90,6 +96,8 @@ class Forager(Worker):
             else:
                 if self.found_food:
                     food_pheromone_grid.lay_down(self.x, self.y)
+                elif self.spooked:
+                    game.fight_pheromones.lay_down(self.x, self.y)
                 nx, ny = self.tether[-1]
                 self.direction = m.atan2(ny - self.y, nx - self.x)
                 self.x, self.y = nx, ny
