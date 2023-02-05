@@ -22,9 +22,10 @@ class Warrior(Worker):
     def __init__(self, x, y, colony, underground):
         super().__init__(x, y, colony)
         self.underground = underground
-        self.state = "follow trail"
+        self.state = "following trail"
         self.target = None
         self.steps = 0
+        self.tether = []
 
     def update(self, game):
         """
@@ -44,12 +45,16 @@ class Warrior(Worker):
             - At end of tether mark yourself as not active
         """
 
+        # print(self.state)
+
         if self.state == "following trail":
+            pygame.draw.circle(game.debug_layer, (255, 0, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
             strongest = self.get_strongest_pheromones_in_front(game, game.fight_pheromones, half_width=100)
             if strongest is None:
                 self.state = "returning"
             else:
                 self.direction = m.atan2(strongest.y - self.y, strongest.x - self.x)
+            # print("move is being called")
             self.move(game.w_width, game.w_height)
 
             """Checking for nearby enemies to pursue"""
@@ -58,7 +63,7 @@ class Warrior(Worker):
             else:
                 qt = game.qAnts
 
-            nearbys = qt.instersect(bbox=[self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
+            nearbys = qt.intersect(bbox=[self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
                                           self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS])
 
             self.target = get_closest_ant(self, nearbys, self.colony)
@@ -78,28 +83,30 @@ class Warrior(Worker):
                 else:
                     self.state = "returning"
 
+            if self.steps > 500:
+                # print("Ran out of steps")
+                self.state = "returning"
+
             """Dealing proximity damage"""
 
             distance = m.dist((self.x, self.y), (self.target.x, self.target.y))
             if distance < 50:
-                self.target.health -= 1
+                self.target.health -= 10
+                if self.target.health < 0:
+                    self.target.active = False
+                    self.state = "returning"
                 if isinstance(self.target, Warrior):
                     pass  # It is up to the enemy warrior to hurt you
-                    self.target.health -= 1
                 else:
-                    self.health -= .5
+                    self.health -= 1
 
         if self.state == "returning":
+            pygame.draw.circle(game.debug_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
             pygame.draw.circle(game.debug_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
 
             if len(self.tether) < 1:
                 """Made it back to the nest"""
-                # self.state = "tunneling"
-                self.energy = 100
-                self.distance_stepped = 0
-                self.tether = []
-                self.state = "tunneling"
-                self.holding_dirt = False
+                self.active = False
             else:
                 nx, ny = self.tether[-1]
                 self.direction = m.atan2(ny - self.y, nx - self.x)
@@ -109,16 +116,21 @@ class Warrior(Worker):
         else:
             """Tether connects them to the last entrance point they have been near"""
             self.tether.append((self.x, self.y))
-            self.distance_stepped += 1
-            if self.distance_stepped > self.energy * 10 + 10:
-                # Start returning
-                self.state = "returning"
+
 
     def draw(self, game):
         """Draws a warrior ant"""
-        pygame.draw.circle(game.underground_ant_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 3)
-        pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
-                         (self.x + m.cos(self.direction) * 10 - game.cam_x,
-                          self.y + m.sin(self.direction) * 10 - game.cam_y))
+        pygame.draw.circle(game.debug_layer, (255, 128, 128), (self.x, self.y), 10)
+        if self.underground:
+            pygame.draw.circle(game.underground_ant_layer, (255, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 150)
+            pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
+                             (self.x + m.cos(self.direction) * 10 - game.cam_x,
+                              self.y + m.sin(self.direction) * 10 - game.cam_y))
+        else:
+            pygame.draw.circle(game.underground_ant_layer, (255, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
+                               150)
+            pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
+                             (self.x + m.cos(self.direction) * 10 - game.cam_x,
+                              self.y + m.sin(self.direction) * 10 - game.cam_y))
         # center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
         # center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)

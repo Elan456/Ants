@@ -14,6 +14,7 @@ clock = pygame.time.Clock()
 
 CAM_SPEED = 50
 
+
 def normalize(x):
     magnitude = np.linalg.norm(x)
     if magnitude > 0:
@@ -33,7 +34,6 @@ class Game:
     def __init__(self):
         self.underground = True
 
-
         self.cam_x = 0
         self.cam_y = 0
 
@@ -42,8 +42,8 @@ class Game:
         self.d_width = 1500
         self.d_height = 900
 
-        self.w_width = 2000
-        self.w_height = 2000
+        self.w_width = 1000
+        self.w_height = 1000
 
         """Nest list"""
         self.entrance_points = []
@@ -101,10 +101,12 @@ class Game:
 
     def draw_world_boundaries(self):
         if not self.underground:
-            pygame.draw.rect(self.ground_layer, (255, 0, 0), [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height], 4)
+            pygame.draw.rect(self.ground_layer, (255, 0, 0),
+                             [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height], 4)
         else:
-            pygame.draw.rect(self.underground_ground_layer, (255, 0, 0), [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height],
-                         4)
+            pygame.draw.rect(self.underground_ground_layer, (255, 0, 0),
+                             [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height],
+                             4)
 
     def process_user_input_events(self):
         for event in pygame.event.get():

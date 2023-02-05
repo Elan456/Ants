@@ -12,8 +12,12 @@ def _loopallchildren(parent):
         yield child
 
 
-def color_from_strength(x):
+def color_from_strength_red(x):
     return 255, 255 - x * 2.55, 255 - x * 2.55
+
+
+def color_from_strength_blue(x):
+    return 255 - x * 2.55, 255 - x * 2.55, 255
 
 
 class PheromoneGrid:
@@ -26,6 +30,10 @@ class PheromoneGrid:
 class Pheromone:
     def __init__(self, type, game):
         self.type = type
+        if self.type == "food":
+            self.color_function = color_from_strength_red
+        elif self.type == "fight":
+            self.color_function = color_from_strength_blue
         # self.lGrid = [[0 for _ in range(game.w_width // GRID_SIZE)] for _ in range(game.w_height // GRID_SIZE)]
         self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10)
 
@@ -36,7 +44,7 @@ class Pheromone:
             c.strength -= .03
             if c.strength > 0:
                 if do_draw:
-                    pygame.draw.rect(game.pheromone_layer, color_from_strength(c.strength),
+                    pygame.draw.rect(game.pheromone_layer, self.color_function(c.strength),
                                      [c.x - game.cam_x, c.y - game.cam_y, GRID_SIZE, GRID_SIZE])
                 self.grid.insert(c, bbox=[c.x, c.y, c.x + GRID_SIZE, c.y + GRID_SIZE])
 
