@@ -9,7 +9,7 @@ from pyqtree import Index
 game = Game()
 
 ANT_COUNT = 25
-FOOD_COUNT = 50
+FOOD_COUNT = 100
 
 def _loopallchildren(parent):
     for child in parent.children:
