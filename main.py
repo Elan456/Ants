@@ -80,10 +80,10 @@ def run_sim():
 
         game.process_user_input_events()
         """Draw all the things that should be seen"""
-
-        for c in _loopallchildren(game.qAnts):
-            pygame.draw.rect(game.ant_layer, (0, 255, 0),
-                             [c.center[0] - c.width / 2, c.center[1] - c.height / 2, c.width, c.height], 1)
+        if game.show_quadtree:
+            for c in _loopallchildren(game.qAnts):
+                pygame.draw.rect(game.ant_layer, (0, 255, 0),
+                                 [c.center[0] - c.width / 2 - game.cam_x, c.center[1] - c.height / 2 - game.cam_y, c.width, c.height], 1)
 
         game.display_display()
 

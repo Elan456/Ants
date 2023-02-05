@@ -32,7 +32,8 @@ class Game:
     """
 
     def __init__(self):
-        self.underground = True
+        self.underground = False
+        self.show_quadtree = False
 
         self.cam_x = 0
         self.cam_y = 0
@@ -90,10 +91,16 @@ class Game:
         self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
 
         self.toggle_underground_button = Button(self.ui_layer, [self.d_width - 150, 0, 150, 50], "Toggle View",
-                                                (0, 0, 0), 30, self.toggle_underground, (0, 0, 200), (0, 0, 255))
+                                                (0, 0, 0), 25, self.toggle_underground, (0, 0, 200), (0, 0, 255))
+        self.toggle_quadtree_button = Button(self.ui_layer, [self.d_width - 150, 50, 150, 50], "Toggle Quadtree",
+                                                (0, 0, 0), 25, self.toggle_show_quadtree, (0, 200, 0), (0, 255, 0))
+
 
     def toggle_underground(self):
         self.underground = not self.underground
+
+    def toggle_show_quadtree(self):
+        self.show_quadtree = not self.show_quadtree
 
     def reset_layers(self):
         self.debug_layer.fill(black)
@@ -146,6 +153,7 @@ class Game:
         mouse = pygame.mouse.get_pos(), pygame.mouse.get_pressed()
         self.draw_world_boundaries()
         self.toggle_underground_button.update(mouse)
+        self.toggle_quadtree_button.update(mouse)
         for i, t in enumerate(self.stats_text):
             if i > 0:
                 t.set_text("Colony " + str(i) + ": " + str(self.ants_killed[i - 1]))
