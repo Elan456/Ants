@@ -27,7 +27,7 @@ class Game:
     """
 
     def __init__(self):
-        self.underground = False
+        self.underground = True
 
         self.cam_x = 0
         self.cam_y = 0
@@ -52,6 +52,9 @@ class Game:
         """The quadtree for all the ants"""
         self.qAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
         self.uQAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
+
+        """Tunnel stuff"""
+        self.tunnels = Index(bbox=[0, 0, self.w_width, self.w_height])
 
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
