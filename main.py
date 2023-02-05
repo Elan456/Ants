@@ -22,15 +22,20 @@ def _loopallchildren(parent):
 
 def run_sim():
     game.entrance_points.append(EntrancePoint(game, 0, 400, 400))
-    # game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
+    game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
     for _ in range(ANT_COUNT):
         game.lAnts.append(Forager(game.entrance_points[0].x,
                                   game.entrance_points[0].y,
                                   0))
+        game.lAnts.append(Forager(game.entrance_points[1].x,
+                                  game.entrance_points[1].y,
+                                  1))
 
     for _ in range(ANT_COUNT - 15):
         game.ulAnts.append(Tunneler(game.entrance_points[0].x,
                                     game.entrance_points[0].y, 0))
+        game.ulAnts.append(Tunneler(game.entrance_points[1].x,
+                                    game.entrance_points[1].y, 1))
 
     for _ in range(FOOD_COUNT):
         game.food.append(Food(game))

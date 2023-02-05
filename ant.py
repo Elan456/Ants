@@ -58,6 +58,8 @@ class Ant:
         self.y = y
         self.x = x
 
+        self.active = True
+
     def eat(self):
         if self.food > 0:
             self.food -= 1
@@ -158,11 +160,3 @@ class Nurse(House):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
 
-
-class Warriors(Worker):
-    def __init__(self, x, y, colony):
-        super().__init__(x, y, colony)
-
-    def draw(self, game):
-        """Draws a warrior ant"""
-        center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
