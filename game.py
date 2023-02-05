@@ -14,6 +14,8 @@ clock = pygame.time.Clock()
 
 CAM_SPEED = 50
 
+colonies = ["Black", "Red", "Purple"]
+
 
 def normalize(x):
     magnitude = np.linalg.norm(x)
@@ -40,8 +42,8 @@ class Game:
 
         self.cam_m = np.zeros(2)
 
-        self.d_width = 1500
-        self.d_height = 900
+        self.d_width = 1700
+        self.d_height = 950
 
         self.w_width = 1000
         self.w_height = 1000
@@ -59,10 +61,10 @@ class Game:
                        1: 0,
                        2: 0}
         yspace = 25
-        self.stats_text = [Text(self.d_width - 125, self.d_height - 100, "Ants Lost", black, 30, "r"),
-                           Text(self.d_width - 125, self.d_height - 100 + yspace, "Colony 1: " + str(self.ants_killed[0]), black, 30, "r"),
-                           Text(self.d_width - 125, self.d_height - 100 + yspace * 2, "Colony 2: " + str(self.ants_killed[1]), black, 30, "r"),
-                           Text(self.d_width - 125, self.d_height - 100 + yspace * 3, "Colony 3: " + str(self.ants_killed[2]), black, 30, "r")]
+        self.stats_text = [Text(self.d_width - 170, self.d_height - 100, "Ants Lost", black, 30, "r"),
+                           Text(self.d_width - 170, self.d_height - 100 + yspace, "Colony 1: " + str(self.ants_killed[0]), black, 30, "r"),
+                           Text(self.d_width - 170, self.d_height - 100 + yspace * 2, "Colony 2: " + str(self.ants_killed[1]), black, 30, "r"),
+                           Text(self.d_width - 170, self.d_height - 100 + yspace * 3, "Colony 3: " + str(self.ants_killed[2]), black, 30, "r")]
 
         """The quadtree for all the ants"""
         self.qAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
@@ -129,6 +131,10 @@ class Game:
 
     def process_user_input_events(self):
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
@@ -156,7 +162,7 @@ class Game:
         self.toggle_quadtree_button.update(mouse)
         for i, t in enumerate(self.stats_text):
             if i > 0:
-                t.set_text("Colony " + str(i) + ": " + str(self.ants_killed[i - 1]))
+                t.set_text(colonies[i - 1] + " Colony: " + str(self.ants_killed[i - 1]))
             t.draw(self.ui_layer)
         if self.underground:
             self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
