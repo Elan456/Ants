@@ -11,10 +11,18 @@ class Food:
         self.y = random.randint(0, game.w_height)
         self.size = random.randint(50, 500)
         self.radius = math.sqrt(self.size)
+        self.active = True
 
     def draw(self, game):
-        pygame.draw.circle(game.ground_layer, green, (self.x - game.cam_x, self.y - game.cam_y), math.sqrt(self.size))
+        if self.active:
+            pygame.draw.circle(game.ground_layer, green, (self.x - game.cam_x, self.y - game.cam_y), math.sqrt(self.size))
 
     def eat(self):
-        self.size -= 1
-        self.radius = math.sqrt(self.size)
+        self.size -= 100
+        if self.size > 0:
+            self.radius = math.sqrt(self.size)
+
+
+        if self.size < 10:
+            self.radius = 0
+            self.active = False
