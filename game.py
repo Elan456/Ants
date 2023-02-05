@@ -7,6 +7,9 @@ from tunnel_system import TunnelSystem
 
 pygame.init()
 
+pygame.display.set_icon(pygame.image.load("images\\icon.png"))
+pygame.display.set_caption("Ants")
+
 clock = pygame.time.Clock()
 
 CAM_SPEED = 50
