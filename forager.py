@@ -112,10 +112,10 @@ class Forager(Worker):
                 self.tether.pop(-1)
 
     def draw(self, game):
-        pygame.draw.circle(game.ant_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 3)
-        pygame.draw.line(game.ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
-                         (self.x + m.cos(self.direction) * 10 - game.cam_x,
-                          self.y + m.sin(self.direction) * 10 - game.cam_y))
+        # pygame.draw.circle(game.ant_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 3)
+        # pygame.draw.line(game.ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
+        #                  (self.x + m.cos(self.direction) * 10 - game.cam_x,
+        #                   self.y + m.sin(self.direction) * 10 - game.cam_y))
 
         if self.found_food:
             pygame.draw.circle(game.ant_layer, (128, 128, 0), (self.x - game.cam_x, self.y - game.cam_y), 4)

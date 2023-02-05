@@ -2,20 +2,22 @@ import pygame
 import random
 import math
 
-green = (50, 255, 50)
+green = (35, 150, 35)
 
 
 class Food:
     def __init__(self, game):
         self.x = random.randint(0, game.w_width)
         self.y = random.randint(0, game.w_height)
-        self.size = random.randint(50, 500)
+        self.size = random.randint(500, 2000)
         self.radius = math.sqrt(self.size)
         self.active = True
 
     def draw(self, game):
         if self.active:
             pygame.draw.circle(game.ground_layer, green, (self.x - game.cam_x, self.y - game.cam_y), math.sqrt(self.size))
+            pygame.draw.circle(game.ground_layer, (165, 42, 42), (self.x - game.cam_x, self.y - game.cam_y),
+                               math.sqrt(self.size), width=5)
 
     def eat(self):
         self.size -= 100
