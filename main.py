@@ -5,6 +5,7 @@ from ant import *
 from forager import Forager
 from nest import EntrancePoint
 from pyqtree import Index
+from tunneler import Tunneler
 
 game = Game()
 
@@ -21,16 +22,15 @@ def _loopallchildren(parent):
 
 def run_sim():
     game.entrance_points.append(EntrancePoint(game, 0, 400, 400))
-    game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
+    # game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
     for _ in range(ANT_COUNT):
         game.lAnts.append(Forager(game.entrance_points[0].x,
                                   game.entrance_points[0].y,
                                   0))
 
-    for _ in range(ANT_COUNT):
-        game.lAnts.append(Forager(game.entrance_points[1].x,
-                                  game.entrance_points[1].y,
-                                  1))
+    for _ in range(ANT_COUNT - 15):
+        game.ulAnts.append(Tunneler(game.entrance_points[0].x,
+                                    game.entrance_points[0].y, 0))
 
     for _ in range(FOOD_COUNT):
         game.food.append(Food(game))
@@ -38,10 +38,17 @@ def run_sim():
     while True:
         game.reset_layers()
         game.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=5)
+
         for ant in game.lAnts:
             game.qAnts.insert(ant, bbox=[ant.x - 1, ant.y - 1, ant.x + 1, ant.y + 1])
             ant.update(game.food_pheromones, game)
-            ant.draw(game)
+            if not game.underground:
+                ant.draw(game)
+
+        for ant in game.ulAnts:
+            ant.update(game)
+            if game.underground:
+                ant.draw(game)
 
         game.food_pheromones.update(game, do_draw=True)
 
@@ -50,6 +57,8 @@ def run_sim():
 
         for e in game.entrance_points:
             e.draw(game)
+
+        game.tunnel_system.draw(game)
 
         game.process_user_input_events()
         """Draw all the things that should be seen"""

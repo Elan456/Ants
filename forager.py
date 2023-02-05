@@ -2,7 +2,7 @@ import math as m
 import random
 import numpy as np
 import pygame
-from ant import Worker, center_rotate_blit
+from ant import Worker, center_rotate_blit, WORKER_IMAGE
 
 def normalize(x):
     magnitude = np.linalg.norm(x)
@@ -142,6 +142,5 @@ class Forager(Worker):
 
         if self.found_food:
             pygame.draw.circle(game.ant_layer, (128, 128, 0), (self.x - game.cam_x, self.y - game.cam_y), 4)
-        pass
-        # center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y),
-        #                    m.degrees(self.direction + m.pi / 2))
+        center_rotate_blit(game.ant_layer, WORKER_IMAGE, (self.x - 10 - game.cam_x, self.y - 15 - game.cam_y),
+                           m.degrees(self.direction + m.pi / 2))
