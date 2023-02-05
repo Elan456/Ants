@@ -2,6 +2,7 @@ import pygame
 from game import Game
 from food import Food
 from ant import *
+from warrior import Warrior
 from forager import Forager
 from nest import EntrancePoint
 from pyqtree import Index
@@ -52,7 +53,8 @@ def run_sim():
             if not game.underground:
                 ant.draw(game)
             if not ant.active:
-                game.ants_killed[ant.colony] += 1
+                if not isinstance(ant, Warrior):
+                    game.ants_killed[ant.colony] += 1
                 # if isinstance(ant, Forager):
                 #     print("Forage killed")
                 game.lAnts.remove(ant)
