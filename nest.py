@@ -2,6 +2,7 @@ import pygame
 import random
 
 blue = (0, 0, 255)
+tortilla = (154, 123, 79)
 
 
 class EntrancePoint:
@@ -16,4 +17,11 @@ class EntrancePoint:
             self.y = y
 
     def draw(self, game):
-        pygame.draw.circle(game.ground_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)
+        if game.underground:
+            pygame.draw.rect(game.underground_ground_layer, tortilla, [self.x - 75 - game.cam_x, self.y - 75 - game.cam_y, 150, 150])
+            pygame.draw.circle(game.underground_ground_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)
+
+        else:
+            pygame.draw.circle(game.ground_layer, blue, (self.x - game.cam_x, self.y - game.cam_y), 25)
+
+
