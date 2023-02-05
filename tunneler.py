@@ -5,6 +5,7 @@ from pyqtree import Index
 from game import Game
 from nest import EntrancePoint
 from ant import House, center_rotate_blit, WORKER_IMAGE
+from forager import Forager
 
 
 class Tunneler(House):
@@ -28,6 +29,8 @@ class Tunneler(House):
 
         if shortest_distance > 200:
             game.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
+            game.lAnts.append(Forager(self.x, self.y, self.colony))
+            game.lAnts.append(Forager(self.x, self.y, self.colony))
 
     def tunnel(self, game):
         """
@@ -86,7 +89,7 @@ class Tunneler(House):
 
             """Tunnels if not holding dirt otherwise goes into return state"""
 
-            pygame.draw.circle(game.debug_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 2)
+            # pygame.draw.circle(game.debug_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 2)
             if not self.holding_dirt:
 
                 self.tunnel(game)
@@ -94,7 +97,7 @@ class Tunneler(House):
                 self.state = "returning"
 
         if self.state == "returning":
-            pygame.draw.circle(game.debug_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
+            # pygame.draw.circle(game.debug_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
 
             if len(self.tether) < 1:
                 """Made it back to the nest"""

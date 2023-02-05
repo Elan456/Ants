@@ -23,8 +23,9 @@ def _loopallchildren(parent):
 
 def run_sim():
 
-    game.entrance_points.append(EntrancePoint(game, 0, 400, 400))
-    game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
+    game.entrance_points.append(EntrancePoint(game, 0, 200, 200))
+    game.entrance_points.append(EntrancePoint(game, 1, game.w_width - 200, game.w_height - 200))
+    game.entrance_points.append(EntrancePoint(game, 2, 200, game.w_height - 200))
     for _ in range(ANT_COUNT):
         game.lAnts.append(Forager(game.entrance_points[0].x,
                                   game.entrance_points[0].y,
@@ -32,12 +33,18 @@ def run_sim():
         game.lAnts.append(Forager(game.entrance_points[1].x,
                                   game.entrance_points[1].y,
                                   1))
+        game.lAnts.append(Forager(game.entrance_points[2].x,
+                                 game.entrance_points[2].y,
+                                 2))
 
     for _ in range(ANT_COUNT - 15):
         game.ulAnts.append(Tunneler(game.entrance_points[0].x,
                                     game.entrance_points[0].y, 0))
         game.ulAnts.append(Tunneler(game.entrance_points[1].x,
                                     game.entrance_points[1].y, 1))
+        game.ulAnts.append(Tunneler(game.entrance_points[2].x,
+                                  game.entrance_points[2].y,
+                                  2))
 
     for _ in range(FOOD_COUNT):
         game.food.append(Food(game))
@@ -70,8 +77,13 @@ def run_sim():
         game.food_pheromones.update(game, do_draw=True)
         game.fight_pheromones.update(game, do_draw=True)
 
-        for f in game.food:
+        old_food = game.food.copy()
+        for f in old_food:
+            if not f.active:  # Remove the eaten food
+                game.food.remove(f)
+                game.food.append(Food(game))
             f.draw(game)
+
 
         for e in game.entrance_points:
             e.draw(game)
