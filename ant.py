@@ -7,17 +7,24 @@ import math as m
 
 WARRIOR_IMAGE = pygame.image.load("images\\Soldier_Ant.png")
 WARRIOR_IMAGE = pygame.transform.scale(WARRIOR_IMAGE, (20, 30))
-
 RED_WARRIOR_IMAGE = pygame.image.load("images\\Red_Soldier_Ant.png")
+RED_WARRIOR_IMAGE = pygame.transform.scale(RED_WARRIOR_IMAGE, (20, 30))
 PURPLE_WARRIOR_IMAGE = pygame.image.load("images\\Purple_Soldier_Ant.png")
+PURPLE_WARRIOR_IMAGE = pygame.transform.scale(PURPLE_WARRIOR_IMAGE, (20, 30))
+
 QUEEN_IMAGE = pygame.image.load("images\\Queen_Ant.png")
 RED_QUEEN_IMAGE = pygame.image.load("images\\Red_Queen_Ant.png")
 PURPLE_QUEEN_IMAGE = pygame.image.load("images\\Purple_Queen_Ant.png")
+
 WORKER_IMAGE = pygame.image.load("images\\Worker_Ant.png")
 WORKER_IMAGE = pygame.transform.scale(WORKER_IMAGE, (12, 20))
 RED_WORKER_IMAGE = pygame.image.load("images\\Red_Worker_Ant.png")
+RED_WORKER_IMAGE = pygame.transform.scale(RED_WORKER_IMAGE, (12, 20))
 PURPLE_WORKER_IMAGE = pygame.image.load("images\\Purple_Worker_Ant.png")
+PURPLE_WORKER_IMAGE = pygame.transform.scale(PURPLE_WORKER_IMAGE, (12, 20))
 
+worker_images = [WORKER_IMAGE, RED_WORKER_IMAGE, PURPLE_WORKER_IMAGE]
+warrior_images = [WARRIOR_IMAGE, RED_WARRIOR_IMAGE, PURPLE_WARRIOR_IMAGE]
 
 
 def center_rotate_blit(surface, image, top_left, angle):
@@ -175,7 +182,7 @@ class House(Worker):
         pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
                          (self.x + m.cos(self.direction) * 10 - game.cam_x,
                           self.y + m.sin(self.direction) * 10 - game.cam_y))
-        center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+        center_rotate_blit(game.underground_ant_layer, worker_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
 
 

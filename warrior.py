@@ -1,6 +1,6 @@
 import pygame
 import math as m
-from ant import Worker, WARRIOR_IMAGE, center_rotate_blit
+from ant import Worker, warrior_images, center_rotate_blit
 
 WARRIOR_DETECTION_RADIUS = 100
 
@@ -128,7 +128,7 @@ class Warrior(Worker):
             pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
                              (self.x + m.cos(self.direction) * 10 - game.cam_x,
                               self.y + m.sin(self.direction) * 10 - game.cam_y))
-            center_rotate_blit(game.underground_ant_layer, WARRIOR_IMAGE, (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+            center_rotate_blit(game.underground_ant_layer, warrior_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                                m.degrees(self.direction + m.pi / 2))
         else:
             pygame.draw.circle(game.underground_ant_layer, (255, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
@@ -136,7 +136,7 @@ class Warrior(Worker):
             pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
                              (self.x + m.cos(self.direction) * 10 - game.cam_x,
                               self.y + m.sin(self.direction) * 10 - game.cam_y))
-            center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+            center_rotate_blit(game.ant_layer, warrior_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                                m.degrees(self.direction + m.pi / 2))
         # center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
         # center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
