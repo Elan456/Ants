@@ -20,10 +20,16 @@ def _loopallchildren(parent):
 
 
 def run_sim():
-    game.entrance_points.append(EntrancePoint(game, 1, 400, 400))
+    game.entrance_points.append(EntrancePoint(game, 0, 400, 400))
+    game.entrance_points.append(EntrancePoint(game, 1, 800, 400))
     for _ in range(ANT_COUNT):
         game.lAnts.append(Forager(game.entrance_points[0].x,
                                   game.entrance_points[0].y,
+                                  0))
+
+    for _ in range(ANT_COUNT):
+        game.lAnts.append(Forager(game.entrance_points[1].x,
+                                  game.entrance_points[1].y,
                                   1))
 
     for _ in range(FOOD_COUNT):
@@ -48,9 +54,9 @@ def run_sim():
         game.process_user_input_events()
         """Draw all the things that should be seen"""
 
-        # for c in _loopallchildren(game.qAnts):
-        #     pygame.draw.rect(game.ant_layer, (0, 255, 0),
-        #                      [c.center[0] - c.width / 2, c.center[1] - c.height / 2, c.width, c.height], 1)
+        for c in _loopallchildren(game.qAnts):
+            pygame.draw.rect(game.ant_layer, (0, 255, 0),
+                             [c.center[0] - c.width / 2, c.center[1] - c.height / 2, c.width, c.height], 1)
 
         game.display_display()
 
