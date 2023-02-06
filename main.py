@@ -11,7 +11,7 @@ from tunneler import Tunneler
 game = Game()
 
 ANT_COUNT = 25
-FOOD_COUNT = 10
+FOOD_COUNT = 30
 
 def _loopallchildren(parent):
     for child in parent.children:

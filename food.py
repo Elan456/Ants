@@ -7,8 +7,8 @@ green = (35, 150, 35)
 
 class Food:
     def __init__(self, game):
-        self.x = random.randint(0, game.w_width)
-        self.y = random.randint(0, game.w_height)
+        self.x = random.randint(25, game.w_width - 25)
+        self.y = random.randint(25, game.w_height - 25)
         self.size = random.randint(500, 2000)
         self.radius = math.sqrt(self.size)
         self.active = True

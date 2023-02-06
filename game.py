@@ -45,8 +45,8 @@ class Game:
         self.d_width = 1700
         self.d_height = 950
 
-        self.w_width = 1000
-        self.w_height = 1000
+        self.w_width = 2000
+        self.w_height = 2000
 
         """Nest list"""
         self.entrance_points = []
@@ -175,7 +175,7 @@ class Game:
             self.gameDisplay.blit(self.ant_layer, (0, 0))
         self.gameDisplay.blit(self.ui_layer, (0, 0))
         # self.gameDisplay.blit(self.debug_layer, (0, 0))
-        # self.fps_counter.set_text(str(int(clock.get_fps())))
-        # self.fps_counter.draw(self.gameDisplay)
+        self.fps_counter.set_text(str(int(clock.get_fps())))
+        self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(600)

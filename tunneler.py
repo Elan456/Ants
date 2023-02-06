@@ -31,6 +31,7 @@ class Tunneler(House):
             game.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
             game.lAnts.append(Forager(self.x, self.y, self.colony))
             game.lAnts.append(Forager(self.x, self.y, self.colony))
+            game.ulAnts.append(Tunneler(self.x, self.y, self.colony))
 
     def tunnel(self, game):
         """
@@ -62,6 +63,7 @@ class Tunneler(House):
                 self.tether = []
 
         if self.state == "random":
+            self.energy -= .1  # To stop from them building too big of a circle around every entrance point
             if not self.holding_dirt:
                 self.direction += random.randint(-100, 100) / 200
                 self.tunnel(game)

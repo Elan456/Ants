@@ -99,6 +99,7 @@ class Forager(Worker):
                     new_warrior = Warrior(self.x, self.y, self.colony, False)
                     new_warrior.direction = self.direction + m.pi
                     game.lAnts.append(new_warrior)
+                self.direction += m.pi  # To face towards their own pheromone trail
                 self.spooked = False
                 # self.tether = []
             else:
