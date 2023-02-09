@@ -59,11 +59,26 @@ def run_sim():
 
     t = 0
     while True:
-        t += 1
-        t %= 100000
-        draw = t % 50 == 0
 
         game.reset_layers()
+
+        game.food_pheromones.update(game, do_draw=not game.underground)
+        game.fight_pheromones.update(game, do_draw=not game.underground)
+
+        if game.underground:
+            game.tunnel_system.draw(game)
+
+        old_food = game.food.copy()
+        for f in old_food:
+            if not f.active:  # Remove the eaten food
+                game.food.remove(f)
+                game.food.append(Food(game))
+            f.draw(game)
+
+        for e in game.entrance_points:
+            e.draw(game)
+
+
         game.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=5)
 
         old_ants = game.lAnts.copy()
@@ -87,31 +102,22 @@ def run_sim():
             if not ant.active:
                 game.ulAnts.remove(ant)
 
-        game.food_pheromones.update(game, do_draw=True)
-        game.fight_pheromones.update(game, do_draw=True)
 
-        old_food = game.food.copy()
-        for f in old_food:
-            if not f.active:  # Remove the eaten food
-                game.food.remove(f)
-                game.food.append(Food(game))
-            f.draw(game)
 
-        for e in game.entrance_points:
-            e.draw(game)
 
-        game.tunnel_system.draw(game)
+
+
 
         game.process_user_input_events()
         """Draw all the things that should be seen"""
-        if draw:
-            if game.show_quadtree:
-                for c in _loopallchildren(game.qAnts):
-                    pygame.draw.rect(game.ant_layer, (0, 255, 0),
-                                     [c.center[0] - c.width / 2 - game.cam_x, c.center[1] - c.height / 2 - game.cam_y,
-                                      c.width, c.height], 1)
 
-        game.display_display(draw)
+        if game.show_quadtree:
+            for c in _loopallchildren(game.qAnts):
+                pygame.draw.rect(game.gameDisplay, (0, 255, 0),
+                                 [c.center[0] - c.width / 2 - game.cam_x, c.center[1] - c.height / 2 - game.cam_y,
+                                  c.width, c.height], 1)
+
+        game.display_display()
 
 
 

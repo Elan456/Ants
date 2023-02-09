@@ -120,7 +120,9 @@ class Forager(Worker):
         #                  (self.x + m.cos(self.direction) * 10 - game.cam_x,
         #                   self.y + m.sin(self.direction) * 10 - game.cam_y))
 
-        if self.found_food:
-            pygame.draw.circle(game.ant_layer, (128, 128, 0), (self.x - game.cam_x, self.y - game.cam_y), 4)
-        center_rotate_blit(game.ant_layer, worker_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+
+        center_rotate_blit(game.gameDisplay, worker_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
+
+        if self.found_food:
+            pygame.draw.circle(game.gameDisplay, (128, 128, 0), (self.x - game.cam_x, self.y - game.cam_y), 4)

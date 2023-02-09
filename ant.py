@@ -130,7 +130,7 @@ class Worker(Ant):
             pheromone_system = in_pheromone_system
 
         qBox = [self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width]
-        pygame.draw.rect(game.debug_layer, (255, 0, 0),
+        pygame.draw.rect(game.gameDisplay, (255, 0, 0),
                          [self.x - half_width - game.cam_x, self.y - half_width - game.cam_y, half_width * 2,
                           half_width * 2], 1)
         test_pheromones = pheromone_system.grid.intersect(bbox=qBox)
@@ -183,7 +183,7 @@ class House(Worker):
         # pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
         #                  (self.x + m.cos(self.direction) * 10 - game.cam_x,
         #                   self.y + m.sin(self.direction) * 10 - game.cam_y))
-        center_rotate_blit(game.underground_ant_layer, worker_images[self.colony],
+        center_rotate_blit(game.gameDisplay, worker_images[self.colony],
                            (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
 

@@ -102,8 +102,6 @@ class Warrior(Worker):
                     self.health -= 1
 
         if self.state == "returning":
-            pygame.draw.circle(game.debug_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
-            pygame.draw.circle(game.debug_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
 
             if len(self.tether) < 1:
                 """Made it back to the nest"""
@@ -121,22 +119,7 @@ class Warrior(Worker):
 
     def draw(self, game):
         """Draws a warrior ant"""
-        pygame.draw.circle(game.debug_layer, (255, 128, 128), (self.x, self.y), 10)
-        if self.underground:
-
-            pygame.draw.circle(game.underground_ant_layer, (255, 255, 0), (self.x - game.cam_x, self.y - game.cam_y), 150)
-            pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
-                             (self.x + m.cos(self.direction) * 10 - game.cam_x,
-                              self.y + m.sin(self.direction) * 10 - game.cam_y))
-            center_rotate_blit(game.underground_ant_layer, warrior_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
-                               m.degrees(self.direction + m.pi / 2))
-        else:
-            pygame.draw.circle(game.underground_ant_layer, (255, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
-                               150)
-            pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
-                             (self.x + m.cos(self.direction) * 10 - game.cam_x,
-                              self.y + m.sin(self.direction) * 10 - game.cam_y))
-            center_rotate_blit(game.ant_layer, warrior_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
-                               m.degrees(self.direction + m.pi / 2))
+        center_rotate_blit(game.gameDisplay, warrior_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+                           m.degrees(self.direction + m.pi / 2))
         # center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
         # center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)

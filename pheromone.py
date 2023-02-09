@@ -46,7 +46,7 @@ class Pheromone:
             c.strength -= .03
             if c.strength > 0:
                 if do_draw:
-                    pygame.draw.rect(game.pheromone_layer, self.color_function(c.strength),
+                    pygame.draw.rect(game.gameDisplay, self.color_function(c.strength),
                                      [c.x - game.cam_x, c.y - game.cam_y, GRID_SIZE, GRID_SIZE])
                 self.newPlist.append(c)
             else:

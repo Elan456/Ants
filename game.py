@@ -75,26 +75,26 @@ class Game:
 
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
-        self.ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        self.ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        self.pheromone_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-
-        self.ui_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-
-        self.underground_ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        self.underground_ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        self.underground_entrance_point_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-
-        self.debug_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        # self.ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        # self.ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        # self.pheromone_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        #
+        # self.ui_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        #
+        # self.underground_ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        # self.underground_ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        # self.underground_entrance_point_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
+        #
+        # self.debug_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
 
         self.food_pheromones = Pheromone("food", self)
         self.fight_pheromones = Pheromone("fight", self)
 
         self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
 
-        self.toggle_underground_button = Button(self.ui_layer, [self.d_width - 150, 0, 150, 50], "Toggle View",
+        self.toggle_underground_button = Button(self.gameDisplay, [self.d_width - 150, 0, 150, 50], "Toggle View",
                                                 (0, 0, 0), 25, self.toggle_underground, (0, 0, 200), (0, 0, 255))
-        self.toggle_quadtree_button = Button(self.ui_layer, [self.d_width - 150, 50, 150, 50], "Toggle Quadtree",
+        self.toggle_quadtree_button = Button(self.gameDisplay, [self.d_width - 150, 50, 150, 50], "Toggle Quadtree",
                                                 (0, 0, 0), 25, self.toggle_show_quadtree, (0, 200, 0), (0, 255, 0))
 
 
@@ -105,15 +105,15 @@ class Game:
         self.show_quadtree = not self.show_quadtree
 
     def reset_layers(self):
-        self.debug_layer.fill(black)
-        self.ant_layer.fill(black)
-        self.pheromone_layer.fill(black)
-        self.ground_layer.fill(black)
-        self.ui_layer.fill(black)
-
-        self.underground_ant_layer.fill(black)
-        self.underground_ground_layer.fill(black)
-        self.underground_entrance_point_layer.fill(black)
+        # self.debug_layer.fill(black)
+        # self.ant_layer.fill(black)
+        # self.pheromone_layer.fill(black)
+        # self.ground_layer.fill(black)
+        # self.ui_layer.fill(black)
+        #
+        # self.underground_ant_layer.fill(black)
+        # self.underground_ground_layer.fill(black)
+        # self.underground_entrance_point_layer.fill(black)
 
         if self.underground:
             self.gameDisplay.fill((53, 35, 21))
@@ -122,10 +122,10 @@ class Game:
 
     def draw_world_boundaries(self):
         if not self.underground:
-            pygame.draw.rect(self.ground_layer, (255, 0, 0),
+            pygame.draw.rect(self.gameDisplay, (255, 0, 0),
                              [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height], 4)
         else:
-            pygame.draw.rect(self.underground_ground_layer, (255, 0, 0),
+            pygame.draw.rect(self.gameDisplay, (255, 0, 0),
                              [0 - self.cam_x, 0 - self.cam_y, self.w_width, self.w_height],
                              4)
 
@@ -155,7 +155,7 @@ class Game:
         self.cam_x += self.cam_m[0]
         self.cam_y += self.cam_m[1]
 
-    def display_display(self, draw):
+    def display_display(self):
 
         mouse = pygame.mouse.get_pos(), pygame.mouse.get_pressed()
 
@@ -165,18 +165,18 @@ class Game:
         for i, t in enumerate(self.stats_text):
             if i > 0:
                 t.set_text(colonies[i - 1] + " Colony: " + str(self.ants_killed[i - 1]))
-            t.draw(self.ui_layer)
-        if self.underground:
-
-            self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
-            self.gameDisplay.blit(self.underground_entrance_point_layer, (0, 0))
-            # self.gameDisplay.blit(self.pheromone_layer, (0, 0))
-            self.gameDisplay.blit(self.underground_ant_layer, (0, 0))
-        else:
-            self.gameDisplay.blit(self.pheromone_layer, (0, 0))
-            self.gameDisplay.blit(self.ground_layer, (0, 0))
-            self.gameDisplay.blit(self.ant_layer, (0, 0))
-            self.gameDisplay.blit(self.ui_layer, (0, 0))
+            t.draw(self.gameDisplay)
+        # if self.underground:
+        #
+        #     self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
+        #     self.gameDisplay.blit(self.underground_entrance_point_layer, (0, 0))
+        #     # self.gameDisplay.blit(self.pheromone_layer, (0, 0))
+        #     self.gameDisplay.blit(self.underground_ant_layer, (0, 0))
+        # else:
+        #     self.gameDisplay.blit(self.pheromone_layer, (0, 0))
+        #     self.gameDisplay.blit(self.ground_layer, (0, 0))
+        #     self.gameDisplay.blit(self.ant_layer, (0, 0))
+        #     self.gameDisplay.blit(self.ui_layer, (0, 0))
             # self.gameDisplay.blit(self.debug_layer, (0, 0))
             self.fps_counter.set_text(str(int(clock.get_fps())))
             self.fps_counter.draw(self.gameDisplay)

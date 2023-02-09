@@ -15,8 +15,8 @@ class Food:
 
     def draw(self, game):
         if self.active:
-            pygame.draw.circle(game.ground_layer, green, (self.x - game.cam_x, self.y - game.cam_y), math.sqrt(self.size))
-            pygame.draw.circle(game.ground_layer, (165, 42, 42), (self.x - game.cam_x, self.y - game.cam_y),
+            pygame.draw.circle(game.gameDisplay, green, (self.x - game.cam_x, self.y - game.cam_y), math.sqrt(self.size))
+            pygame.draw.circle(game.gameDisplay, (165, 42, 42), (self.x - game.cam_x, self.y - game.cam_y),
                                math.sqrt(self.size), width=5)
 
     def eat(self):
