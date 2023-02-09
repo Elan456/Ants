@@ -155,8 +155,10 @@ class Game:
         self.cam_x += self.cam_m[0]
         self.cam_y += self.cam_m[1]
 
-    def display_display(self):
+    def display_display(self, draw):
+
         mouse = pygame.mouse.get_pos(), pygame.mouse.get_pressed()
+
         self.draw_world_boundaries()
         self.toggle_underground_button.update(mouse)
         self.toggle_quadtree_button.update(mouse)
@@ -165,6 +167,7 @@ class Game:
                 t.set_text(colonies[i - 1] + " Colony: " + str(self.ants_killed[i - 1]))
             t.draw(self.ui_layer)
         if self.underground:
+
             self.gameDisplay.blit(self.underground_ground_layer, (0, 0))
             self.gameDisplay.blit(self.underground_entrance_point_layer, (0, 0))
             # self.gameDisplay.blit(self.pheromone_layer, (0, 0))
@@ -173,9 +176,9 @@ class Game:
             self.gameDisplay.blit(self.pheromone_layer, (0, 0))
             self.gameDisplay.blit(self.ground_layer, (0, 0))
             self.gameDisplay.blit(self.ant_layer, (0, 0))
-        self.gameDisplay.blit(self.ui_layer, (0, 0))
-        # self.gameDisplay.blit(self.debug_layer, (0, 0))
-        self.fps_counter.set_text(str(int(clock.get_fps())))
-        self.fps_counter.draw(self.gameDisplay)
+            self.gameDisplay.blit(self.ui_layer, (0, 0))
+            # self.gameDisplay.blit(self.debug_layer, (0, 0))
+            self.fps_counter.set_text(str(int(clock.get_fps())))
+            self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
         clock.tick(600)

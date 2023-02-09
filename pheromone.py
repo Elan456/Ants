@@ -29,6 +29,7 @@ class PheromoneGrid:
 
 class Pheromone:
     def __init__(self, type, game):
+        self.newPlist = None
         self.type = type
         if self.type == "food":
             self.color_function = color_from_strength_red
@@ -36,24 +37,30 @@ class Pheromone:
             self.color_function = color_from_strength_blue
         # self.lGrid = [[0 for _ in range(game.w_width // GRID_SIZE)] for _ in range(game.w_height // GRID_SIZE)]
         self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10)
+        self.pList = []
 
     def update(self, game, do_draw=False):
-        all_cells = self.grid.intersect(bbox=[0, 0, game.w_width, game.w_height])
-        self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10)
-        for c in all_cells:
+       # print(len(self.pList))
+        self.newPlist = []
+        for c in self.pList:
             c.strength -= .03
             if c.strength > 0:
                 if do_draw:
                     pygame.draw.rect(game.pheromone_layer, self.color_function(c.strength),
                                      [c.x - game.cam_x, c.y - game.cam_y, GRID_SIZE, GRID_SIZE])
-                self.grid.insert(c, bbox=[c.x, c.y, c.x + GRID_SIZE, c.y + GRID_SIZE])
+                self.newPlist.append(c)
+            else:
+                self.grid.remove(c, [c.x, c.y, c.x + GRID_SIZE, c.y + GRID_SIZE])
+        self.pList = self.newPlist.copy()
 
     def lay_down(self, x, y):
         tx = int(x / GRID_SIZE) * GRID_SIZE
         ty = int(y / GRID_SIZE) * GRID_SIZE
         l = self.grid.intersect(bbox=[tx + 1, ty + 1, tx + GRID_SIZE - 1, ty + GRID_SIZE - 1])
         if len(l) == 0:  # No pheromone there right now
-            self.grid.insert(PheromoneGrid(tx, ty), bbox=[tx, ty, tx + GRID_SIZE, ty + GRID_SIZE])
+            new_p = PheromoneGrid(tx, ty)
+            self.pList.append(new_p)
+            self.grid.insert(new_p, [tx, ty, tx + GRID_SIZE, ty + GRID_SIZE])
         else:
             if l[0].strength < 95:
                 l[0].strength += 5

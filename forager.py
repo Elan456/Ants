@@ -17,6 +17,7 @@ class Forager(Worker):
         self.tether = []
         self.turning_direction = 1
         self.spooked = False
+        self.near_food = False
 
 
     def update(self, game):
@@ -39,6 +40,7 @@ class Forager(Worker):
                 # Start returning
                 self.state = "returning"
 
+            self.near_food = False
             for f in game.food:
                 if f.active:
                     # print("GOT FOOD")
@@ -50,12 +52,12 @@ class Forager(Worker):
                         self.found_food = True
                         self.state = "returning"
                     elif d < 50:
+                        self.near_food = True
                         self.direction = m.atan2(f.y - self.y, f.x - self.x)
+                        self.move(game.w_width, game.w_height)
 
-        if self.state == "searching":
+        if self.state == "searching" and not self.near_food:
             """
-                Keep track of how far /
-                Check low energy /
                 Check for strong pheromone nearby and start following it
                 Check if it found food
             """
@@ -79,7 +81,7 @@ class Forager(Worker):
                 self.direction = m.atan2(strongest.y - self.y, strongest.x - self.x)
                 self.state = "following trail"
 
-        if self.state == "following trail":
+        if self.state == "following trail" and not self.near_food:
             strongest = self.get_strongest_pheromones_in_front(game, food_pheromone_grid)
             if strongest is None:
                 self.state = "searching"

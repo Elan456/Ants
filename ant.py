@@ -42,15 +42,14 @@ def normalize(x):
         return np.zeros(2)
 
 
+# THIS FUNCTION IS USING A LOT OF TIME TRY TO OPTIMIZE CALLED A LOT
 def check_if_in_front(my_loc, target_loc, my_direction):
-    small_ahead = my_loc + my_direction
-    small_behind = my_loc
+    direction_to_target = m.atan2(target_loc[1] - my_loc[1], target_loc[0] - my_loc[0])
+    diff = abs(my_direction - direction_to_target)
+    if diff > m.pi:
+        diff = 2 * m.pi - diff
 
-    # D to target
-    d = normalize(target_loc - my_loc)
-    small_to_target = my_loc + d
-
-    return m.dist(small_behind, small_to_target) > m.dist(small_ahead, small_to_target)
+    return diff < m.pi / 2
 
 
 class Ant:
@@ -102,8 +101,9 @@ class Worker(Ant):
         super().__init__(x, y, colony)
 
     def enemy_near_by(self, game, underground):
+        return False
         qBox = [self.x - 50, self.y - 50, self.x + 50, self.y + 50]
-        pygame.draw.rect(game.debug_layer, (0, 0, 255), [self.x - 50, self.y - 50, 100, 100], 1)
+        # pygame.draw.rect(game.debug_layer, (0, 0, 255), [self.x - 50, self.y - 50, 100, 100], 1)
         if underground:
             nears = game.uQAnts.intersect(qBox)
         else:
@@ -130,13 +130,14 @@ class Worker(Ant):
             pheromone_system = in_pheromone_system
 
         qBox = [self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width]
-        pygame.draw.rect(game.debug_layer, (255, 0, 0), [self.x - half_width - game.cam_x, self.y - half_width - game.cam_y, half_width * 2, half_width * 2], 1)
+        pygame.draw.rect(game.debug_layer, (255, 0, 0),
+                         [self.x - half_width - game.cam_x, self.y - half_width - game.cam_y, half_width * 2,
+                          half_width * 2], 1)
         test_pheromones = pheromone_system.grid.intersect(bbox=qBox)
-        my_direction = [m.cos(self.direction), m.sin(self.direction)]
 
         in_front_pheromones = []
         for p in test_pheromones:
-            if check_if_in_front(np.array([self.x, self.y]), np.array([p.x, p.y]), my_direction):
+            if check_if_in_front(np.array([self.x, self.y]), np.array([p.x, p.y]), self.direction):
                 in_front_pheromones.append(p)
 
         if len(in_front_pheromones) > 0:
@@ -182,12 +183,11 @@ class House(Worker):
         # pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
         #                  (self.x + m.cos(self.direction) * 10 - game.cam_x,
         #                   self.y + m.sin(self.direction) * 10 - game.cam_y))
-        center_rotate_blit(game.underground_ant_layer, worker_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+        center_rotate_blit(game.underground_ant_layer, worker_images[self.colony],
+                           (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
-
 
 
 class Nurse(House):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
-
