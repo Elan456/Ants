@@ -101,7 +101,6 @@ class Worker(Ant):
         super().__init__(x, y, colony)
 
     def enemy_near_by(self, game, underground):
-        return False
         qBox = [self.x - 50, self.y - 50, self.x + 50, self.y + 50]
         # pygame.draw.rect(game.debug_layer, (0, 0, 255), [self.x - 50, self.y - 50, 100, 100], 1)
         if underground:
@@ -130,11 +129,7 @@ class Worker(Ant):
             pheromone_system = in_pheromone_system
 
         qBox = [self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width]
-        pygame.draw.rect(game.gameDisplay, (255, 0, 0),
-                         [self.x - half_width - game.cam_x, self.y - half_width - game.cam_y, half_width * 2,
-                          half_width * 2], 1)
         test_pheromones = pheromone_system.grid.intersect(bbox=qBox)
-
         in_front_pheromones = []
         for p in test_pheromones:
             if check_if_in_front(np.array([self.x, self.y]), np.array([p.x, p.y]), self.direction):

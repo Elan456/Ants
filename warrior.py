@@ -49,7 +49,7 @@ class Warrior(Worker):
         # print(self.state)
 
         if self.state == "following trail":
-            pygame.draw.circle(game.debug_layer, (255, 0, 0), (self.x - game.cam_x, self.y - game.cam_y), 2)
+
             strongest = self.get_strongest_pheromones_in_front(game, game.fight_pheromones, half_width=100)
             if strongest is None:
                 self.state = "returning"

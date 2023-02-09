@@ -45,8 +45,8 @@ class Game:
         self.d_width = 1700
         self.d_height = 950
 
-        self.w_width = 2000
-        self.w_height = 2000
+        self.w_width = 800
+        self.w_height = 800
 
         """Nest list"""
         self.entrance_points = []

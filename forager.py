@@ -18,6 +18,7 @@ class Forager(Worker):
         self.turning_direction = 1
         self.spooked = False
         self.near_food = False
+        self.my_entrance_point = None
 
 
     def update(self, game):
@@ -27,6 +28,7 @@ class Forager(Worker):
         for e in game.entrance_points:
             if e.colony == self.colony and m.dist((self.x, self.y), (e.x, e.y)) < 20:
                 self.tether = []
+                self.my_entrance_point = e
 
         if self.state == "searching" or self.state == "following trail":
             """Check for spooked"""
@@ -94,13 +96,15 @@ class Forager(Worker):
                 """Made it back to the nest"""
                 self.state = "searching"
                 self.energy = 100
+                if self.found_food:
+                    self.my_entrance_point.food += 10
+                    self.my_entrance_point.spawn_forager(game)
                 self.found_food = False
                 self.distance_searched = 0
+
                 if self.spooked:
                     # Spawn a warrior ant
-                    new_warrior = Warrior(self.x, self.y, self.colony, False)
-                    new_warrior.direction = self.direction + m.pi
-                    game.lAnts.append(new_warrior)
+                    self.my_entrance_point.spawn_warrior(game, self.direction + m.pi)
                 self.direction += m.pi  # To face towards their own pheromone trail
                 self.spooked = False
                 # self.tether = []

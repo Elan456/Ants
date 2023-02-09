@@ -22,10 +22,9 @@ class Tunneler(House):
     def try_to_spawn_entrance_point(self, game):
         shortest_distance = float("inf")
         for e in game.entrance_points:
-            if e.colony == self.colony:
-                distance = m.dist((self.x, self.y), (e.x, e.y))
-                if distance < shortest_distance:
-                    shortest_distance = distance
+            distance = m.dist((self.x, self.y), (e.x, e.y))
+            if distance < shortest_distance:
+                shortest_distance = distance
 
         if shortest_distance > 200:
             game.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
@@ -71,12 +70,12 @@ class Tunneler(House):
                 self.state = "returning"
 
             """Trying to start actual tunneling towards the pheromones"""
-            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=50)
+            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=20)
             if strongest is not None:
                 self.state = "tunneling"
 
         if self.state == "tunneling":
-            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=50)
+            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=20)
             if strongest is None:
                 self.state = "random"
             else:
