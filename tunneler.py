@@ -2,7 +2,7 @@ import math as m
 import random
 import pygame
 from pyqtree import Index
-from nest import EntrancePoint
+
 from ant import House, center_rotate_blit, WORKER_IMAGE
 from forager import Forager
 
@@ -26,8 +26,7 @@ class Tunneler(House):
                 shortest_distance = distance
 
         if shortest_distance > 200:
-            self.colony.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
-            self.colony.under_ants.append(Tunneler(self.x, self.y, self.colony))
+            self.colony.new_entrance_point(game, self.x, self.y)
 
     def tunnel(self, game):
         """

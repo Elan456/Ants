@@ -47,6 +47,7 @@ class Forager(Worker):
         self.energy -= .05
 
         self.try_reset_tether()
+        self.check_being_held()
 
         """Check for spooked"""
         if self.enemy_near_by(game, False):
@@ -96,11 +97,12 @@ class Forager(Worker):
         if self.state == "returning":
             if len(self.tether) < 1:
                 """Made it back to the nest"""
+                self.my_entrance_point.last_visit = 0
                 self.state = "searching"
                 self.energy = 100
                 if self.found_food:
                     self.my_entrance_point.food += 10
-                    self.my_entrance_point.spawn_forager(game)
+                    self.my_entrance_point.spawn_worker()
                 self.found_food = False
                 self.distance_searched = 0
 
@@ -111,14 +113,15 @@ class Forager(Worker):
                 self.spooked = False
                 # self.tether = []
             else:
-                if self.found_food:
-                    food_pheromone_grid.lay_down(self.x, self.y)
-                elif self.spooked:
-                    game.fight_pheromones.lay_down(self.x, self.y)
-                nx, ny = self.tether[-1]
-                self.direction = m.atan2(ny - self.y, nx - self.x)
-                self.x, self.y = nx, ny
-                self.tether.pop(-1)
+                if self.held is None:
+                    if self.found_food:
+                        food_pheromone_grid.lay_down(self.x, self.y)
+                    elif self.spooked:
+                        game.fight_pheromones.lay_down(self.x, self.y)
+                    nx, ny = self.tether[-1]
+                    self.direction = m.atan2(ny - self.y, nx - self.x)
+                    self.x, self.y = nx, ny
+                    self.tether.pop(-1)
 
     def draw(self, game):
         # pygame.draw.circle(game.ant_layer, (0, 255, 255), (self.x - game.cam_x, self.y - game.cam_y), 3)

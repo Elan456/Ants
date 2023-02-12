@@ -18,8 +18,8 @@ from tunneler import Tunneler
 
 game = Game()
 
-ANT_COUNT = 300
-FOOD_COUNT = 10
+
+FOOD_COUNT = 1
 FOOD_RESPAWN = True
 
 
@@ -57,6 +57,12 @@ def run_sim():
 
         for c in game.colonies:
             c.draw_entrance_points(game)
+            old_eps = c.entrance_points.copy()
+            for e in old_eps:
+                e.update()
+                if not e.active:
+                    c.entrance_points.remove(e)
+
 
         game.num_ants = [0, 0, 0]
         for c in game.colonies:
@@ -73,8 +79,6 @@ def run_sim():
                                   c.width, c.height], 1)
 
         game.display_display()
-
-
 
 
 cProfile.run("run_sim()", sort=2)

@@ -27,6 +27,10 @@ class Colony:
 
         self.ants_lost = 0
 
+    def new_entrance_point(self, game, x, y):
+        self.entrance_points.append(EntrancePoint(game, self, x, y))
+        self.under_ants.append(Tunneler(x, y, self))
+
     def update(self, game):
 
         # Updating the above ground ants

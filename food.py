@@ -9,7 +9,7 @@ class Food:
     def __init__(self, game):
         self.x = random.randint(25, game.w_width - 25)
         self.y = random.randint(25, game.w_height - 25)
-        self.size = random.randint(500, 2000)
+        self.size = random.randint(2000, 10000)
         self.radius = math.sqrt(self.size)
         self.active = True
 

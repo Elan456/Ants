@@ -47,12 +47,15 @@ class Warrior(Worker):
         """
 
         # print(self.state)
+        self.check_being_held()
 
         if self.state == "following trail":
+            self.steps += 1
 
             strongest = self.get_strongest_pheromones_in_front(game, game.fight_pheromones, half_width=100)
             if strongest is None:
-                self.state = "returning"
+                pass
+                # self.state = "returning"
             else:
                 self.direction = m.atan2(strongest.y - self.y, strongest.x - self.x)
             # print("move is being called")
@@ -73,33 +76,44 @@ class Warrior(Worker):
                 self.steps = 0  # To start the step counter, so we do not chase too far
 
         if self.state == "pursue":
-            self.steps += 1
-            self.direction = m.atan2(self.target.y - self.y, self.target.x - self.x)
-            if not self.underground:
-                self.move(game.w_width, game.w_height)
-            else:
-                ahead = (self.x + m.cos(self.direction) * 5, self.y + m.sin(self.direction) * 5)
-                if game.tunnel_system.is_open(ahead[0], ahead[1]):
-                    self.move(game.w_width, game.w_height)
-                else:
-                    self.state = "returning"
 
-            if self.steps > 500:
-                # print("Ran out of steps")
-                self.state = "returning"
+            # else:
+            #     ahead = (self.x + m.cos(self.direction) * 5, self.y + m.sin(self.direction) * 5)
+            #     if game.tunnel_system.is_open(ahead[0], ahead[1]):
+            #         self.move(game.w_width, game.w_height)
+            #     else:
+            #         self.state = "returning"
+
+
 
             """Dealing proximity damage"""
 
             distance = m.dist((self.x, self.y), (self.target.x, self.target.y))
-            if distance < 25:
-                self.target.health -= 10
+            if distance < 15:
+                if len(self.tether) > 0:
+                    self.tether.pop(-1)  # Do not record these steps
+                self.target.health -= 1
+                if self.target.held is None:
+                    self.target.held = self
                 if self.target.health < 0:
                     self.target.active = False
-                    self.state = "returning"
+                    self.state = "following trail"
                 if isinstance(self.target, Warrior):
                     pass  # It is up to the enemy warrior to hurt you
                 else:
                     self.health -= 1
+                    if self.health < 0:
+                        self.active = False
+            else:
+                # Too far from target to grab and hurt
+                if self.target.held == self:  # If I was the ant holding this ant down
+                    self.target.held = None  # Now I am not holding the ant
+
+                # Moving towards them
+                self.steps += 1
+                self.direction = m.atan2(self.target.y - self.y, self.target.x - self.x)
+                if not self.underground:
+                    self.move(game.w_width, game.w_height)
 
         if self.state == "returning":
 
@@ -119,6 +133,9 @@ class Warrior(Worker):
         else:
             """Tether connects them to the last entrance point they have been near"""
             self.tether.append((self.x, self.y))
+            if self.steps > 500:
+                # print("Ran out of steps")
+                self.state = "returning"
 
 
     def draw(self, game):

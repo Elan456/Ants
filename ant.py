@@ -58,6 +58,7 @@ class Ant:
             self.energy = random.randint(50, 200)
         self.colony = colony
         self.speed = speed
+        self.held = None  # Keeps track of what ant is holding this ant down
         if direction is None:
             self.direction = random.randrange(0, 100) / (2 * m.pi)
         self.health = health
@@ -124,6 +125,13 @@ class Worker(Ant):
                 self.tether = []
                 self.my_entrance_point = e
 
+    def check_being_held(self):
+        """Checks if the ant holding me is still active
+        If they are not active, then I release my self from them"""
+
+        if self.held is not None and not self.held.active:
+            self.held = None
+
     @staticmethod
     def get_strongest(pheromones):
         strongest = pheromones[0]
@@ -159,17 +167,18 @@ class Worker(Ant):
 
     def move(self, max_w, max_h):
         """Updates the position of the ant based on their direction and speed"""
-        self.x += m.cos(self.direction) * self.speed
-        self.y += m.sin(self.direction) * self.speed
+        if self.held is None:  # No ant is holding me
+            self.x += m.cos(self.direction) * self.speed
+            self.y += m.sin(self.direction) * self.speed
 
-        if self.x + 10 > max_w:
-            self.x = max_w - 10
-        elif self.x < 0:
-            self.x = 0
-        if self.y + 16 > max_h:
-            self.y = max_h - 16
-        elif self.y < 0:
-            self.y = 0
+            if self.x + 10 > max_w:
+                self.x = max_w - 10
+            elif self.x < 0:
+                self.x = 0
+            if self.y + 16 > max_h:
+                self.y = max_h - 16
+            elif self.y < 0:
+                self.y = 0
 
     def drop_pheromone(self, type):
         """Drops a pheromone of a specific type"""

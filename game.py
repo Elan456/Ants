@@ -13,11 +13,11 @@ pygame.display.set_caption("Ants")
 
 clock = pygame.time.Clock()
 
-CAM_SPEED = 50
+CAM_SPEED = 25
 
 colonies = ["Black", "Red", "Purple"]
 
-FORAGERS = 1
+FORAGERS = 3
 TUNNLERS = 5
 
 
@@ -52,8 +52,8 @@ class Game:
         self.d_width = 1700
         self.d_height = 950
 
-        self.w_width = 1000
-        self.w_height = 1000
+        self.w_width = 750
+        self.w_height = 750
 
         """Nest list"""
         self.food = []
@@ -183,4 +183,4 @@ class Game:
             self.fps_counter.set_text(str(int(clock.get_fps())))
             self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
-        self.dt = clock.tick(600) / 16
+        self.dt = clock.tick(6000) / 16
