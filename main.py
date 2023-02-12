@@ -18,8 +18,9 @@ from tunneler import Tunneler
 
 game = Game()
 
-ANT_COUNT = 20
-FOOD_COUNT = 1
+ANT_COUNT = 300
+FOOD_COUNT = 10
+FOOD_RESPAWN = True
 
 
 def _loopallchildren(parent):
@@ -31,28 +32,6 @@ def _loopallchildren(parent):
 
 
 def run_sim():
-    game.entrance_points.append(EntrancePoint(game, 0, 200, 200))
-    game.entrance_points.append(EntrancePoint(game, 1, game.w_width - 200, game.w_height - 200))
-    game.entrance_points.append(EntrancePoint(game, 2, 200, game.w_height - 200))
-    for _ in range(ANT_COUNT):
-        game.lAnts.append(Forager(game.entrance_points[0].x,
-                                  game.entrance_points[0].y,
-                                  0))
-        game.lAnts.append(Forager(game.entrance_points[1].x,
-                                  game.entrance_points[1].y,
-                                  1))
-        game.lAnts.append(Forager(game.entrance_points[2].x,
-                                  game.entrance_points[2].y,
-                                  2))
-
-    for _ in range(ANT_COUNT - 15):
-        game.ulAnts.append(Tunneler(game.entrance_points[0].x,
-                                    game.entrance_points[0].y, 0))
-        game.ulAnts.append(Tunneler(game.entrance_points[1].x,
-                                    game.entrance_points[1].y, 1))
-        game.ulAnts.append(Tunneler(game.entrance_points[2].x,
-                                    game.entrance_points[2].y,
-                                    2))
 
     for _ in range(FOOD_COUNT):
         game.food.append(Food(game))
@@ -72,47 +51,23 @@ def run_sim():
         for f in old_food:
             if not f.active:  # Remove the eaten food
                 game.food.remove(f)
-                game.food.append(Food(game))
+                if FOOD_RESPAWN:
+                    game.food.append(Food(game))
             f.draw(game)
 
-        for e in game.entrance_points:
-            e.draw(game)
+        for c in game.colonies:
+            c.draw_entrance_points(game)
 
-
-        game.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=5)
-
-        old_ants = game.lAnts.copy()
-        for ant in old_ants:
-            game.qAnts.insert(ant, bbox=[ant.x - 1, ant.y - 1, ant.x + 1, ant.y + 1])
-            ant.update(game)
-            if not game.underground:
-                ant.draw(game)
-            if not ant.active:
-                if not isinstance(ant, Warrior):
-                    game.ants_killed[ant.colony] += 1
-                # if isinstance(ant, Forager):
-                #     print("Forage killed")
-                game.lAnts.remove(ant)
-
-        old_ulAnts = game.ulAnts.copy()
-        for ant in old_ulAnts:
-            ant.update(game)
-            if game.underground:
-                ant.draw(game)
-            if not ant.active:
-                game.ulAnts.remove(ant)
-
-
-
-
-
+        game.num_ants = [0, 0, 0]
+        for c in game.colonies:
+            c.update(game)
 
 
         game.process_user_input_events()
         """Draw all the things that should be seen"""
 
         if game.show_quadtree:
-            for c in _loopallchildren(game.qAnts):
+            for c in _loopallchildren(game.colonies[0].qAnts):
                 pygame.draw.rect(game.gameDisplay, (0, 255, 0),
                                  [c.center[0] - c.width / 2 - game.cam_x, c.center[1] - c.height / 2 - game.cam_y,
                                   c.width, c.height], 1)

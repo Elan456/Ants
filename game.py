@@ -4,6 +4,7 @@ from pheromone import Pheromone
 from pyqtree import Index
 from helpers import Text, Button
 from tunnel_system import TunnelSystem
+from colony import Colony
 
 pygame.init()
 
@@ -15,6 +16,9 @@ clock = pygame.time.Clock()
 CAM_SPEED = 50
 
 colonies = ["Black", "Red", "Purple"]
+
+FORAGERS = 1
+TUNNLERS = 5
 
 
 def normalize(x):
@@ -37,38 +41,36 @@ class Game:
         self.underground = False
         self.show_quadtree = False
 
+        self.num_ants = [0, 0, 0]
+
         self.cam_x = 0
         self.cam_y = 0
+        self.dt = 0  # Time between frames
 
         self.cam_m = np.zeros(2)
 
         self.d_width = 1700
         self.d_height = 950
 
-        self.w_width = 800
-        self.w_height = 800
+        self.w_width = 1000
+        self.w_height = 1000
 
         """Nest list"""
-        self.entrance_points = []
-
         self.food = []
 
-        """List of all the ants"""
-        self.lAnts = []
-        self.ulAnts = []
+        self.colonies = [Colony(self, 0, (100, 100), FORAGERS, TUNNLERS),
+                         Colony(self, 1, (self.w_width - 100, self.w_height - 100), FORAGERS, TUNNLERS),
+                         Colony(self, 2, (100, self.w_height - 100), FORAGERS, TUNNLERS)]
 
         self.ants_killed = {0: 0,
                        1: 0,
                        2: 0}
         yspace = 25
-        self.stats_text = [Text(self.d_width - 170, self.d_height - 100, "Ants Lost", black, 30, "r"),
-                           Text(self.d_width - 170, self.d_height - 100 + yspace, "Colony 1: " + str(self.ants_killed[0]), black, 30, "r"),
-                           Text(self.d_width - 170, self.d_height - 100 + yspace * 2, "Colony 2: " + str(self.ants_killed[1]), black, 30, "r"),
-                           Text(self.d_width - 170, self.d_height - 100 + yspace * 3, "Colony 3: " + str(self.ants_killed[2]), black, 30, "r")]
-
-        """The quadtree for all the ants"""
-        self.qAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
-        self.uQAnts = Index(bbox=[0, 0, self.w_width, self.w_height])
+        self.stats_text = [Text(self.d_width - 300, self.d_height - 100, "     Colony: Lost | Has", black, 30, "r"),
+                           Text(self.d_width - 300, self.d_height - 100 + yspace, "Colony 1: " + str(self.ants_killed[0]), black, 30, "r"),
+                           Text(self.d_width - 300, self.d_height - 100 + yspace * 2, "Colony 2: " + str(self.ants_killed[1]), black, 30, "r"),
+                           Text(self.d_width - 300, self.d_height - 100 + yspace * 3, "Colony 3: " + str(self.ants_killed[2]), black, 30, "r"),
+                           ]
 
         """Tunnel stuff"""
         self.tunnel_system = TunnelSystem(self)
@@ -150,7 +152,7 @@ class Game:
         if keys[pygame.K_LEFT]:
             self.cam_m[0] -= 1
 
-        self.cam_m = normalize(self.cam_m) * CAM_SPEED
+        self.cam_m = normalize(self.cam_m) * CAM_SPEED * self.dt
 
         self.cam_x += self.cam_m[0]
         self.cam_y += self.cam_m[1]
@@ -164,7 +166,7 @@ class Game:
         self.toggle_quadtree_button.update(mouse)
         for i, t in enumerate(self.stats_text):
             if i > 0:
-                t.set_text(colonies[i - 1] + " Colony: " + str(self.ants_killed[i - 1]))
+                t.set_text(colonies[i - 1] + " Colony: " + str(self.ants_killed[i - 1]) + " | " + str(self.num_ants[i - 1]))
             t.draw(self.gameDisplay)
         # if self.underground:
         #
@@ -181,4 +183,4 @@ class Game:
             self.fps_counter.set_text(str(int(clock.get_fps())))
             self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
-        clock.tick(600)
+        self.dt = clock.tick(600) / 16

@@ -2,7 +2,6 @@ import math as m
 import random
 import pygame
 from pyqtree import Index
-from game import Game
 from nest import EntrancePoint
 from ant import House, center_rotate_blit, WORKER_IMAGE
 from forager import Forager
@@ -21,16 +20,14 @@ class Tunneler(House):
 
     def try_to_spawn_entrance_point(self, game):
         shortest_distance = float("inf")
-        for e in game.entrance_points:
+        for e in self.colony.entrance_points:
             distance = m.dist((self.x, self.y), (e.x, e.y))
             if distance < shortest_distance:
                 shortest_distance = distance
 
         if shortest_distance > 200:
-            game.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
-            game.lAnts.append(Forager(self.x, self.y, self.colony))
-            game.lAnts.append(Forager(self.x, self.y, self.colony))
-            game.ulAnts.append(Tunneler(self.x, self.y, self.colony))
+            self.colony.entrance_points.append(EntrancePoint(game, self.colony, self.x, self.y))
+            self.colony.under_ants.append(Tunneler(self.x, self.y, self.colony))
 
     def tunnel(self, game):
         """
@@ -57,9 +54,7 @@ class Tunneler(House):
         """
         # print(self.state)
 
-        for e in game.entrance_points:
-            if e.colony == self.colony and m.dist((self.x, self.y), (e.x, e.y)) < 20:
-                self.tether = []
+        self.try_reset_tether()
 
         if self.state == "random":
             self.energy -= .1  # To stop from them building too big of a circle around every entrance point

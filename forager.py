@@ -6,35 +6,54 @@ from ant import Worker, center_rotate_blit, worker_images, normalize, check_if_i
 from warrior import Warrior
 
 
-
-
 class Forager(Worker):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
         self.state = "searching"
         self.found_food = False
         self.distance_searched = 0
-        self.tether = []
+
         self.turning_direction = 1
         self.spooked = False
         self.near_food = False
-        self.my_entrance_point = None
 
+
+    def check_food(self, game):
+        closest_distance = float("inf")
+        closest = None
+        self.near_food = False
+        for f in game.food:
+            if f.active:
+                # print("GOT FOOD")
+                d = m.dist((self.x, self.y), (f.x, f.y))
+
+                if d < f.radius:
+                    f.eat()
+                    self.food += 10  # Not used for anything
+                    self.found_food = True
+                    self.state = "returning"
+                elif d < 50:
+                    self.near_food = True
+                    if d < closest_distance:
+                        closest_distance = d
+                        closest = f
+
+        if self.near_food:
+            self.direction = m.atan2(closest.y - self.y, closest.x - self.x)
+            self.move(game.w_width, game.w_height)
 
     def update(self, game):
         food_pheromone_grid = game.food_pheromones
-        self.energy -= .1
+        self.energy -= .05
 
-        for e in game.entrance_points:
-            if e.colony == self.colony and m.dist((self.x, self.y), (e.x, e.y)) < 20:
-                self.tether = []
-                self.my_entrance_point = e
+        self.try_reset_tether()
+
+        """Check for spooked"""
+        if self.enemy_near_by(game, False):
+            self.spooked = True
+            self.state = "returning"
 
         if self.state == "searching" or self.state == "following trail":
-            """Check for spooked"""
-            if self.enemy_near_by(game, False):
-                self.spooked = True
-                self.state = "returning"
 
             self.tether.append((self.x, self.y))
             self.distance_searched += 1
@@ -42,21 +61,8 @@ class Forager(Worker):
                 # Start returning
                 self.state = "returning"
 
-            self.near_food = False
-            for f in game.food:
-                if f.active:
-                    # print("GOT FOOD")
-                    d = m.dist((self.x, self.y), (f.x, f.y))
-
-                    if d < f.radius:
-                        f.eat()
-                        self.food += 10
-                        self.found_food = True
-                        self.state = "returning"
-                    elif d < 50:
-                        self.near_food = True
-                        self.direction = m.atan2(f.y - self.y, f.x - self.x)
-                        self.move(game.w_width, game.w_height)
+        if not self.found_food:
+            self.check_food(game)
 
         if self.state == "searching" and not self.near_food:
             """
@@ -64,12 +70,8 @@ class Forager(Worker):
                 Check if it found food
             """
 
-            """
-                Checking if I found food
-            """
-
             # Movement
-            self.direction += random.randrange(0, 100, 1) / 1000 * self.turning_direction
+            self.direction += random.randrange(0, 100, 1) / 2000 * self.turning_direction
             if random.randint(0, 10) == 0:
                 self.turning_direction *= -1
 
@@ -124,8 +126,8 @@ class Forager(Worker):
         #                  (self.x + m.cos(self.direction) * 10 - game.cam_x,
         #                   self.y + m.sin(self.direction) * 10 - game.cam_y))
 
-
-        center_rotate_blit(game.gameDisplay, worker_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+        center_rotate_blit(game.gameDisplay, worker_images[self.colony.num],
+                           (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
 
         if self.found_food:

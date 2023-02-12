@@ -59,13 +59,13 @@ class Warrior(Worker):
             self.move(game.w_width, game.w_height)
 
             """Checking for nearby enemies to pursue"""
-            if self.underground:
-                qt = game.uqAnts
-            else:
-                qt = game.qAnts
-
-            nearbys = qt.intersect(bbox=[self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
-                                          self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS])
+            qBox = [self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
+                                          self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS]
+            nearbys = []
+            if not self.underground:
+                for c in game.colonies:
+                    if c != self.colony:
+                        nearbys += c.qAnts.intersect(qBox)
 
             self.target = get_closest_ant(self, nearbys, self.colony)
             if self.target is not None:
@@ -105,6 +105,10 @@ class Warrior(Worker):
 
             if len(self.tether) < 1:
                 """Made it back to the nest"""
+
+                # Putting food back into the nest
+                ep = sorted(self.colony.entrance_points, key=lambda p: m.dist((p.x, p.y), (self.x, self.y)))[0]
+                ep.food += 10
                 self.active = False
             else:
                 nx, ny = self.tether[-1]
@@ -119,7 +123,7 @@ class Warrior(Worker):
 
     def draw(self, game):
         """Draws a warrior ant"""
-        center_rotate_blit(game.gameDisplay, warrior_images[self.colony], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+        center_rotate_blit(game.gameDisplay, warrior_images[self.colony.num], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
         # center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
         # center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)

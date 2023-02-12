@@ -49,7 +49,7 @@ def check_if_in_front(my_loc, target_loc, my_direction):
     if diff > m.pi:
         diff = 2 * m.pi - diff
 
-    return diff < m.pi / 2
+    return diff < m.pi / 3
 
 
 class Ant:
@@ -91,6 +91,7 @@ class Queen(Ant):
         """Draws a queen ant at this location"""
         center_rotate_blit(game.ant_layer, QUEEN_IMAGE, (self.x, self.y), self.direction)
 
+CHECK_SIZE = 100
 
 class Worker(Ant):
     """
@@ -99,20 +100,29 @@ class Worker(Ant):
 
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
+        self.tether = []
+        self.my_entrance_point = None
 
     def enemy_near_by(self, game, underground):
-        qBox = [self.x - 50, self.y - 50, self.x + 50, self.y + 50]
+        qBox = [self.x - CHECK_SIZE, self.y - CHECK_SIZE, self.x + CHECK_SIZE, self.y + CHECK_SIZE]
         # pygame.draw.rect(game.debug_layer, (0, 0, 255), [self.x - 50, self.y - 50, 100, 100], 1)
-        if underground:
-            nears = game.uQAnts.intersect(qBox)
-        else:
-            nears = game.qAnts.intersect(qBox)
+        nears = []
+        if not underground:
+            for c in game.colonies:
+                if c != self.colony:
+                    nears += c.qAnts.intersect(qBox)
 
         for a in nears:
             if a.colony != self.colony:
                 # Found an enemy any
                 return True
         return False
+
+    def try_reset_tether(self):
+        for e in self.colony.entrance_points:
+            if e.colony == self.colony and m.dist((self.x, self.y), (e.x, e.y)) < 20:
+                self.tether = []
+                self.my_entrance_point = e
 
     @staticmethod
     def get_strongest(pheromones):
@@ -156,7 +166,7 @@ class Worker(Ant):
             self.x = max_w - 10
         elif self.x < 0:
             self.x = 0
-        elif self.y + 16 > max_h:
+        if self.y + 16 > max_h:
             self.y = max_h - 16
         elif self.y < 0:
             self.y = 0
@@ -178,7 +188,7 @@ class House(Worker):
         # pygame.draw.line(game.underground_ant_layer, (0, 255, 0), (self.x - game.cam_x, self.y - game.cam_y),
         #                  (self.x + m.cos(self.direction) * 10 - game.cam_x,
         #                   self.y + m.sin(self.direction) * 10 - game.cam_y))
-        center_rotate_blit(game.gameDisplay, worker_images[self.colony],
+        center_rotate_blit(game.gameDisplay, worker_images[self.colony.num],
                            (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
 

@@ -1,7 +1,7 @@
 import pygame
 from pyqtree import Index
 
-GRID_SIZE = 5
+GRID_SIZE = 4
 
 
 def _loopallchildren(parent):
@@ -36,7 +36,7 @@ class Pheromone:
         elif self.type == "fight":
             self.color_function = color_from_strength_blue
         # self.lGrid = [[0 for _ in range(game.w_width // GRID_SIZE)] for _ in range(game.w_height // GRID_SIZE)]
-        self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10)
+        self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10, max_depth=5)
         self.pList = []
 
     def update(self, game, do_draw=False):
@@ -56,7 +56,7 @@ class Pheromone:
     def lay_down(self, x, y):
         tx = int(x / GRID_SIZE) * GRID_SIZE
         ty = int(y / GRID_SIZE) * GRID_SIZE
-        l = self.grid.intersect(bbox=[tx + 1, ty + 1, tx + GRID_SIZE - 1, ty + GRID_SIZE - 1])
+        l = self.grid.intersect(bbox=[tx - GRID_SIZE, ty - GRID_SIZE, tx + GRID_SIZE, ty + GRID_SIZE])
         if len(l) == 0:  # No pheromone there right now
             new_p = PheromoneGrid(tx, ty)
             self.pList.append(new_p)
