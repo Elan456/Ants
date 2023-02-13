@@ -17,12 +17,14 @@ class Forager(Worker):
         self.spooked = False
         self.near_food = False
 
-
     def check_food(self, game):
         closest_distance = float("inf")
         closest = None
         self.near_food = False
-        for f in game.food:
+
+        nearbys = game.qFood.intersect(bbox=[self.x - 100, self.y - 100, self.x + 100, self.y + 100])
+
+        for f in nearbys:
             if f.active:
                 # print("GOT FOOD")
                 d = m.dist((self.x, self.y), (f.x, f.y))
@@ -32,7 +34,7 @@ class Forager(Worker):
                     self.food += 10  # Not used for anything
                     self.found_food = True
                     self.state = "returning"
-                elif d < 50:
+                elif d < 50 + f.radius:
                     self.near_food = True
                     if d < closest_distance:
                         closest_distance = d
@@ -43,7 +45,7 @@ class Forager(Worker):
             self.move(game.w_width, game.w_height)
 
     def update(self, game):
-        food_pheromone_grid = game.food_pheromones
+        food_pheromone_grid = self.colony.food_pheromones
         self.energy -= .05
 
         self.try_reset_tether()
@@ -115,9 +117,9 @@ class Forager(Worker):
             else:
                 if self.held is None:
                     if self.found_food:
-                        food_pheromone_grid.lay_down(self.x, self.y)
+                        self.colony.food_pheromones.lay_down(self.x, self.y)
                     elif self.spooked:
-                        game.fight_pheromones.lay_down(self.x, self.y)
+                        self.colony.fight_pheromones.lay_down(self.x, self.y)
                     nx, ny = self.tether[-1]
                     self.direction = m.atan2(ny - self.y, nx - self.x)
                     self.x, self.y = nx, ny

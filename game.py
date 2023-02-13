@@ -5,6 +5,7 @@ from pyqtree import Index
 from helpers import Text, Button
 from tunnel_system import TunnelSystem
 from colony import Colony
+from food import Food
 
 pygame.init()
 
@@ -17,8 +18,9 @@ CAM_SPEED = 25
 
 colonies = ["Black", "Red", "Purple"]
 
-FORAGERS = 3
+FORAGERS = 50
 TUNNLERS = 5
+FOOD_COUNT = 50
 
 
 def normalize(x):
@@ -52,19 +54,28 @@ class Game:
         self.d_width = 1700
         self.d_height = 950
 
-        self.w_width = 750
-        self.w_height = 750
+        self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
-        """Nest list"""
+        self.w_width = 1500
+        self.w_height = 1500
+
+        """Food setup"""
         self.food = []
+        self.qFood = Index(bbox=[0, 0, self.w_width, self.w_height])
+
+        for _ in range(FOOD_COUNT):
+            new_food = Food(self)
+            self.food.append(new_food)
+            self.qFood.insert(new_food, bbox=new_food.get_bbox())
 
         self.colonies = [Colony(self, 0, (100, 100), FORAGERS, TUNNLERS),
-                         Colony(self, 1, (self.w_width - 100, self.w_height - 100), FORAGERS, TUNNLERS),
-                         Colony(self, 2, (100, self.w_height - 100), FORAGERS, TUNNLERS)]
+                         Colony(self, 1, (self.w_width - 100, self.w_height - 100), FORAGERS, TUNNLERS)]
+                         #Colony(self, 2, (100, self.w_height - 100), FORAGERS, TUNNLERS)]
 
         self.ants_killed = {0: 0,
                        1: 0,
                        2: 0}
+
         yspace = 25
         self.stats_text = [Text(self.d_width - 300, self.d_height - 100, "     Colony: Lost | Has", black, 30, "r"),
                            Text(self.d_width - 300, self.d_height - 100 + yspace, "Colony 1: " + str(self.ants_killed[0]), black, 30, "r"),
@@ -74,23 +85,6 @@ class Game:
 
         """Tunnel stuff"""
         self.tunnel_system = TunnelSystem(self)
-
-        self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
-
-        # self.ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        # self.ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        # self.pheromone_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        #
-        # self.ui_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        #
-        # self.underground_ant_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        # self.underground_ground_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        # self.underground_entrance_point_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-        #
-        # self.debug_layer = pygame.Surface((self.d_width, self.d_height), pygame.SRCALPHA)
-
-        self.food_pheromones = Pheromone("food", self)
-        self.fight_pheromones = Pheromone("fight", self)
 
         self.fps_counter = Text(20, 20, "", (128, 128, 0), 20, "right")
 
@@ -180,7 +174,7 @@ class Game:
         #     self.gameDisplay.blit(self.ant_layer, (0, 0))
         #     self.gameDisplay.blit(self.ui_layer, (0, 0))
             # self.gameDisplay.blit(self.debug_layer, (0, 0))
-            self.fps_counter.set_text(str(int(clock.get_fps())))
-            self.fps_counter.draw(self.gameDisplay)
+        self.fps_counter.set_text(str(int(clock.get_fps())))
+        self.fps_counter.draw(self.gameDisplay)
         pygame.display.update()
         self.dt = clock.tick(6000) / 16

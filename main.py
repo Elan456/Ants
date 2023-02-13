@@ -14,12 +14,8 @@ from nest import EntrancePoint
 from pyqtree import Index
 from tunneler import Tunneler
 
-
-
 game = Game()
 
-
-FOOD_COUNT = 1
 FOOD_RESPAWN = True
 
 
@@ -31,42 +27,45 @@ def _loopallchildren(parent):
         yield child
 
 
+def update_food():
+    old_food = game.food.copy()
+    game.qFood = Index(bbox=[0, 0, game.w_width, game.w_height])
+    for f in old_food:
+        if not f.active:  # Remove the eaten food
+            game.food.remove(f)
+            if FOOD_RESPAWN:
+                game.food.append(Food(game))
+        else:
+            game.qFood.insert(f, bbox=[f.x - f.radius, f.y - f.radius, f.x + f.radius, f.y + f.radius])
+
+        f.draw(game)
+
+
+def update_colonies():
+    for c in game.colonies:
+        c.draw_entrance_points(game)
+        old_eps = c.entrance_points.copy()
+        for e in old_eps:
+            e.update()
+            if not e.active:
+                c.entrance_points.remove(e)
+
+    game.num_ants = [0, 0, 0]
+    for c in game.colonies:
+        c.update(game)
+
 def run_sim():
-
-    for _ in range(FOOD_COUNT):
-        game.food.append(Food(game))
-
     t = 0
     while True:
 
         game.reset_layers()
 
-        game.food_pheromones.update(game, do_draw=not game.underground)
-        game.fight_pheromones.update(game, do_draw=not game.underground)
-
         if game.underground:
             game.tunnel_system.draw(game)
 
-        old_food = game.food.copy()
-        for f in old_food:
-            if not f.active:  # Remove the eaten food
-                game.food.remove(f)
-                if FOOD_RESPAWN:
-                    game.food.append(Food(game))
-            f.draw(game)
+        update_food()
+        update_colonies()
 
-        for c in game.colonies:
-            c.draw_entrance_points(game)
-            old_eps = c.entrance_points.copy()
-            for e in old_eps:
-                e.update()
-                if not e.active:
-                    c.entrance_points.remove(e)
-
-
-        game.num_ants = [0, 0, 0]
-        for c in game.colonies:
-            c.update(game)
 
 
         game.process_user_input_events()
@@ -82,5 +81,3 @@ def run_sim():
 
 
 cProfile.run("run_sim()", sort=2)
-
-

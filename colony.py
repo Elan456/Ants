@@ -4,6 +4,7 @@ from warrior import Warrior
 from forager import Forager
 from tunneler import Tunneler
 from nest import EntrancePoint
+from pheromone import Pheromone
 
 
 class Colony:
@@ -12,6 +13,8 @@ class Colony:
         self.num_foragers = num_foragers
         self.entrance_point_loc = entrance_point_loc
         self.num = num
+        self.food_pheromones = Pheromone("food", game)
+        self.fight_pheromones = Pheromone("fight", game)
 
         self.above_ants = []
         for _ in range(num_foragers):
@@ -32,6 +35,10 @@ class Colony:
         self.under_ants.append(Tunneler(x, y, self))
 
     def update(self, game):
+
+        # Updating the pheromones
+        self.food_pheromones.update(game, do_draw=not game.underground)
+        self.fight_pheromones.update(game, do_draw=not game.underground)
 
         # Updating the above ground ants
         self.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_depth=5)
@@ -55,6 +62,8 @@ class Colony:
             game.num_ants[self.num] += 1
             if game.underground:
                 a.draw(game)
+
+
 
     def draw_entrance_points(self, game):
         for ep in self.entrance_points:

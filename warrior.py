@@ -52,7 +52,7 @@ class Warrior(Worker):
         if self.state == "following trail":
             self.steps += 1
 
-            strongest = self.get_strongest_pheromones_in_front(game, game.fight_pheromones, half_width=100)
+            strongest = self.get_strongest_pheromones_in_front(game, self.colony.fight_pheromones, half_width=100)
             if strongest is None:
                 pass
                 # self.state = "returning"

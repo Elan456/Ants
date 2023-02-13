@@ -142,7 +142,7 @@ class Worker(Ant):
 
     def get_strongest_pheromones_in_front(self, game, in_pheromone_system=None, half_width=10):
         if in_pheromone_system is None:
-            pheromone_system = game.food_pheromones
+            pheromone_system = self.colony.food_pheromones
         else:
             pheromone_system = in_pheromone_system
 

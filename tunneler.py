@@ -64,12 +64,12 @@ class Tunneler(House):
                 self.state = "returning"
 
             """Trying to start actual tunneling towards the pheromones"""
-            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=20)
+            strongest = self.get_strongest_pheromones_in_front(game, self.colony.food_pheromones, half_width=20)
             if strongest is not None:
                 self.state = "tunneling"
 
         if self.state == "tunneling":
-            strongest = self.get_strongest_pheromones_in_front(game, game.food_pheromones, half_width=20)
+            strongest = self.get_strongest_pheromones_in_front(game, self.colony.food_pheromones, half_width=20)
             if strongest is None:
                 self.state = "random"
             else:
