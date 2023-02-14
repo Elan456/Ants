@@ -18,9 +18,9 @@ CAM_SPEED = 25
 
 colonies = ["Black", "Red", "Purple"]
 
-FORAGERS = 50
+FORAGERS = 5
 TUNNLERS = 5
-FOOD_COUNT = 50
+FOOD_COUNT = 5
 
 
 def normalize(x):
@@ -56,8 +56,8 @@ class Game:
 
         self.gameDisplay = pygame.display.set_mode((self.d_width, self.d_height))
 
-        self.w_width = 1500
-        self.w_height = 1500
+        self.w_width = 500
+        self.w_height = 500
 
         """Food setup"""
         self.food = []

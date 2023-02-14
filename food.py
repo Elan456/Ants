@@ -9,14 +9,14 @@ green = (35, 150, 35)
 class Food:
     def __init__(self, game):
         found_spot = False
-        max_size = 10000
+        max_size = 1000
         while not found_spot:
             if max_size > 50:
                 max_size -= 50
 
             # print(max_size)
 
-            self.size = random.randint(10, 10000)
+            self.size = random.randint(10, max_size)
             self.x = random.randint(25, game.w_width - 25)
             self.y = random.randint(25, game.w_height - 25)
             self.radius = math.sqrt(self.size)

@@ -6,6 +6,10 @@ from ant import Worker, center_rotate_blit, worker_images, normalize, check_if_i
 from warrior import Warrior
 
 
+def dist_sq(p1, p2):
+    return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+
+
 class Forager(Worker):
     def __init__(self, x, y, colony):
         super().__init__(x, y, colony)
@@ -18,7 +22,7 @@ class Forager(Worker):
         self.near_food = False
 
     def check_food(self, game):
-        closest_distance = float("inf")
+        closest_distance_sq = float("inf")
         closest = None
         self.near_food = False
 
@@ -27,17 +31,17 @@ class Forager(Worker):
         for f in nearbys:
             if f.active:
                 # print("GOT FOOD")
-                d = m.dist((self.x, self.y), (f.x, f.y))
+                d_sq = dist_sq((self.x, self.y), (f.x, f.y))
 
-                if d < f.radius:
+                if d_sq < f.radius ** 2:
                     f.eat()
                     self.food += 10  # Not used for anything
                     self.found_food = True
                     self.state = "returning"
-                elif d < 50 + f.radius:
+                elif d_sq < (50 + f.radius) ** 2:
                     self.near_food = True
-                    if d < closest_distance:
-                        closest_distance = d
+                    if d_sq < closest_distance_sq:
+                        closest_distance_sq = d_sq
                         closest = f
 
         if self.near_food:

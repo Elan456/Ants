@@ -4,16 +4,20 @@ from ant import Worker, warrior_images, center_rotate_blit
 
 WARRIOR_DETECTION_RADIUS = 100
 
+# Calculates the distance squared, so the sqrt is never calculated to save time
+def dist_sq(p1, p2):
+    return (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2
+
 
 def get_closest_ant(origin, ant_list, colony_they_must_not_be):
-    closest_distance = float("inf")
+    closest_distance_sq = float("inf")
     closest_ant = None
 
     for a in ant_list:
         if a.colony != colony_they_must_not_be:
-            distance = m.dist((origin.x, origin.y), (a.x, a.y))
-            if distance < closest_distance:
-                closest_distance = distance
+            distance_sq = dist_sq(origin, a)
+            if distance_sq < closest_distance_sq:
+                closest_distance_sq = distance_sq
                 closest_ant = a
     return closest_ant
 
@@ -63,7 +67,7 @@ class Warrior(Worker):
 
             """Checking for nearby enemies to pursue"""
             qBox = [self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
-                                          self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS]
+                    self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS]
             nearbys = []
             if not self.underground:
                 for c in game.colonies:
@@ -83,8 +87,6 @@ class Warrior(Worker):
             #         self.move(game.w_width, game.w_height)
             #     else:
             #         self.state = "returning"
-
-
 
             """Dealing proximity damage"""
 
@@ -137,10 +139,10 @@ class Warrior(Worker):
                 # print("Ran out of steps")
                 self.state = "returning"
 
-
     def draw(self, game):
         """Draws a warrior ant"""
-        center_rotate_blit(game.gameDisplay, warrior_images[self.colony.num], (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
+        center_rotate_blit(game.gameDisplay, warrior_images[self.colony.num],
+                           (self.x - 5 - game.cam_x, self.y - 10 - game.cam_y),
                            m.degrees(self.direction + m.pi / 2))
         # center_rotate_blit(game.underground_ant_layer, WORKER_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
         # center_rotate_blit(game.ant_layer, WARRIOR_IMAGE, (self.x - game.cam_x, self.y - game.cam_y), self.direction)
