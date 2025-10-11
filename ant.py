@@ -5,22 +5,22 @@ import pygame
 import numpy as np
 import math as m
 
-WARRIOR_IMAGE = pygame.image.load("images\\Soldier_Ant.png")
+WARRIOR_IMAGE = pygame.image.load("images/Soldier_Ant.png")
 WARRIOR_IMAGE = pygame.transform.scale(WARRIOR_IMAGE, (20, 30))
-RED_WARRIOR_IMAGE = pygame.image.load("images\\Red_Soldier_Ant.png")
+RED_WARRIOR_IMAGE = pygame.image.load("images/Red_Soldier_Ant.png")
 RED_WARRIOR_IMAGE = pygame.transform.scale(RED_WARRIOR_IMAGE, (20, 30))
-PURPLE_WARRIOR_IMAGE = pygame.image.load("images\\Purple_Soldier_Ant.png")
+PURPLE_WARRIOR_IMAGE = pygame.image.load("images/Purple_Soldier_Ant.png")
 PURPLE_WARRIOR_IMAGE = pygame.transform.scale(PURPLE_WARRIOR_IMAGE, (20, 30))
 
-QUEEN_IMAGE = pygame.image.load("images\\Queen_Ant.png")
-RED_QUEEN_IMAGE = pygame.image.load("images\\Red_Queen_Ant.png")
-PURPLE_QUEEN_IMAGE = pygame.image.load("images\\Purple_Queen_Ant.png")
+QUEEN_IMAGE = pygame.image.load("images/Queen_Ant.png")
+RED_QUEEN_IMAGE = pygame.image.load("images/Red_Queen_Ant.png")
+PURPLE_QUEEN_IMAGE = pygame.image.load("images/Purple_Queen_Ant.png")
 
-WORKER_IMAGE = pygame.image.load("images\\Worker_Ant.png")
+WORKER_IMAGE = pygame.image.load("images/Worker_Ant.png")
 WORKER_IMAGE = pygame.transform.scale(WORKER_IMAGE, (12, 20))
-RED_WORKER_IMAGE = pygame.image.load("images\\Red_Worker_Ant.png")
+RED_WORKER_IMAGE = pygame.image.load("images/Red_Worker_Ant.png")
 RED_WORKER_IMAGE = pygame.transform.scale(RED_WORKER_IMAGE, (12, 20))
-PURPLE_WORKER_IMAGE = pygame.image.load("images\\Purple_Worker_Ant.png")
+PURPLE_WORKER_IMAGE = pygame.image.load("images/Purple_Worker_Ant.png")
 PURPLE_WORKER_IMAGE = pygame.transform.scale(PURPLE_WORKER_IMAGE, (12, 20))
 
 worker_images = [WORKER_IMAGE, RED_WORKER_IMAGE, PURPLE_WORKER_IMAGE]
@@ -105,18 +105,20 @@ class Worker(Ant):
         self.my_entrance_point = None
 
     def enemy_near_by(self, game, underground):
-        qBox = [self.x - CHECK_SIZE, self.y - CHECK_SIZE, self.x + CHECK_SIZE, self.y + CHECK_SIZE]
+        qBox = (self.x - CHECK_SIZE, self.y - CHECK_SIZE, self.x + CHECK_SIZE, self.y + CHECK_SIZE)
         # pygame.draw.rect(game.debug_layer, (0, 0, 255), [self.x - 50, self.y - 50, 100, 100], 1)
         nears = []
         if not underground:
             for c in game.colonies:
                 if c != self.colony:
-                    nears += c.qAnts.intersect(qBox)
+                    out = c.qAnts.query(qBox, as_items=True)
+                    nears += out
 
         for a in nears:
-            if a.colony != self.colony:
+            if a.obj.colony != self.colony:
                 # Found an enemy any
                 return True
+
         return False
 
     def try_reset_tether(self):
@@ -146,10 +148,11 @@ class Worker(Ant):
         else:
             pheromone_system = in_pheromone_system
 
-        qBox = [self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width]
-        test_pheromones = pheromone_system.grid.intersect(bbox=qBox)
+        qBox = (self.x - half_width, self.y - half_width, self.x + half_width, self.y + half_width)
+        test_pheromones = pheromone_system.grid.query(qBox, as_items=True)
         in_front_pheromones = []
-        for p in test_pheromones:
+        for p_item in test_pheromones:
+            p = p_item.obj
             if check_if_in_front(np.array([self.x, self.y]), np.array([p.x, p.y]), self.direction):
                 in_front_pheromones.append(p)
 

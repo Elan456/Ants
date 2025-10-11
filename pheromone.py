@@ -1,5 +1,5 @@
 import pygame
-from pyqtree import Index
+from fastquadtree import QuadTree
 
 GRID_SIZE = 4
 
@@ -36,7 +36,7 @@ class Pheromone:
         elif self.type == "fight":
             self.color_function = color_from_strength_blue
         # self.lGrid = [[0 for _ in range(game.w_width // GRID_SIZE)] for _ in range(game.w_height // GRID_SIZE)]
-        self.grid = Index(bbox=[0, 0, game.w_width, game.w_height], max_items=10, max_depth=5)
+        self.grid = QuadTree((0, 0, game.w_width, game.w_height), capacity=10, max_depth=5, track_objects=True)
         self.pList = []
 
     def update(self, game, do_draw=False):
@@ -50,20 +50,20 @@ class Pheromone:
                                      [c.x - game.cam_x, c.y - game.cam_y, GRID_SIZE, GRID_SIZE])
                 self.newPlist.append(c)
             else:
-                self.grid.remove(c, [c.x, c.y, c.x + GRID_SIZE, c.y + GRID_SIZE])
+                self.grid.delete_by_object(c)
         self.pList = self.newPlist.copy()
 
     def lay_down(self, x, y):
         tx = int(x / GRID_SIZE) * GRID_SIZE
         ty = int(y / GRID_SIZE) * GRID_SIZE
-        l = self.grid.intersect(bbox=[tx - GRID_SIZE, ty - GRID_SIZE, tx + GRID_SIZE, ty + GRID_SIZE])
+        l = self.grid.query((tx - GRID_SIZE, ty - GRID_SIZE, tx + GRID_SIZE, ty + GRID_SIZE), as_items=True)
         if len(l) == 0:  # No pheromone there right now
             new_p = PheromoneGrid(tx, ty)
             self.pList.append(new_p)
-            self.grid.insert(new_p, [tx, ty, tx + GRID_SIZE, ty + GRID_SIZE])
+            self.grid.insert((tx, ty), obj=new_p)
         else:
-            if l[0].strength < 95:
-                l[0].strength += 5
+            if l[0].obj.strength < 95:
+                l[0].obj.strength += 5
 
     def draw(self, game):
         pass

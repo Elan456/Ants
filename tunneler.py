@@ -1,10 +1,7 @@
 import math as m
 import random
-import pygame
-from pyqtree import Index
 
-from ant import House, center_rotate_blit, WORKER_IMAGE
-from forager import Forager
+from ant import House
 
 
 class Tunneler(House):

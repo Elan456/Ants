@@ -66,20 +66,26 @@ class Warrior(Worker):
             self.move(game.w_width, game.w_height)
 
             """Checking for nearby enemies to pursue"""
-            qBox = [self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
-                    self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS]
+            qBox = (self.x - WARRIOR_DETECTION_RADIUS, self.y - WARRIOR_DETECTION_RADIUS,
+                    self.x + WARRIOR_DETECTION_RADIUS, self.y + WARRIOR_DETECTION_RADIUS)
             nearbys = []
             if not self.underground:
                 for c in game.colonies:
                     if c != self.colony:
-                        nearbys += c.qAnts.intersect(qBox)
+                        nearbys += c.qAnts.query(qBox, as_items=True)
 
-            self.target = get_closest_ant(self, nearbys, self.colony)
+            nearby_ant_list = [n.obj for n in nearbys]
+
+            self.target = get_closest_ant(self, nearby_ant_list, self.colony)
             if self.target is not None:
                 self.state = "pursue"
                 self.steps = 0  # To start the step counter, so we do not chase too far
 
         if self.state == "pursue":
+
+            if self.target is None or not self.target.active:
+                self.state = "returning"
+                return
 
             # else:
             #     ahead = (self.x + m.cos(self.direction) * 5, self.y + m.sin(self.direction) * 5)

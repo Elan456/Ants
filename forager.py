@@ -26,25 +26,25 @@ class Forager(Worker):
         closest = None
         self.near_food = False
 
-        nearbys = game.qFood.intersect(bbox=[self.x - 100, self.y - 100, self.x + 100, self.y + 100])
+        nearbys = game.qFood.query((self.x - 100, self.y - 100, self.x + 100, self.y + 100), as_items=True)
 
         for f in nearbys:
-            if f.active:
+            if f.obj.active:
                 # print("GOT FOOD")
                 d_sq = dist_sq((self.x, self.y), (f.x, f.y))
 
-                if d_sq < f.radius ** 2:
-                    f.eat()
+                if d_sq < f.obj.radius ** 2:
+                    f.obj.eat()
                     self.food += 10  # Not used for anything
                     self.found_food = True
                     self.state = "returning"
-                elif d_sq < (50 + f.radius) ** 2:
+                elif d_sq < (50 + f.obj.radius) ** 2:
                     self.near_food = True
                     if d_sq < closest_distance_sq:
                         closest_distance_sq = d_sq
                         closest = f
 
-        if self.near_food:
+        if self.near_food and closest is not None:
             self.direction = m.atan2(closest.y - self.y, closest.x - self.x)
             self.move(game.w_width, game.w_height)
 
@@ -101,6 +101,7 @@ class Forager(Worker):
             self.move(game.w_width, game.w_height)
 
         if self.state == "returning":
+            assert self.my_entrance_point is not None, "Forager has no entrance point to return to"
             if len(self.tether) < 1:
                 """Made it back to the nest"""
                 self.my_entrance_point.last_visit = 0

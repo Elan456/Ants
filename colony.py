@@ -1,5 +1,5 @@
 import pygame
-from pyqtree import Index
+from fastquadtree import RectQuadTree
 from warrior import Warrior
 from forager import Forager
 from tunneler import Tunneler
@@ -26,7 +26,7 @@ class Colony:
 
         self.entrance_points = [EntrancePoint(game, self, x=entrance_point_loc[0], y=entrance_point_loc[1])]
 
-        self.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height])
+        self.qAnts = RectQuadTree((0, 0, game.w_width, game.w_height), capacity=5, track_objects=True)
 
         self.ants_lost = 0
 
@@ -41,12 +41,12 @@ class Colony:
         self.fight_pheromones.update(game, do_draw=not game.underground)
 
         # Updating the above ground ants
-        self.qAnts = Index(bbox=[0, 0, game.w_width, game.w_height], max_depth=5)
+        self.qAnts.clear()
         old_ants = self.above_ants.copy()
         for a in old_ants:
             a.update(game)
             game.num_ants[self.num] += 1
-            self.qAnts.insert(a, bbox=[a.x - .5, a.y - .5, a.x + .5, a.y + .5])
+            self.qAnts.insert((a.x - .5, a.y - .5, a.x + .5, a.y + .5), obj=a)
             if not game.underground:
                 a.draw(game)
 

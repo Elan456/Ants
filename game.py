@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 from pheromone import Pheromone
-from pyqtree import Index
+from fastquadtree import QuadTree
 from helpers import Text, Button
 from tunnel_system import TunnelSystem
 from colony import Colony
@@ -9,7 +9,7 @@ from food import Food
 
 pygame.init()
 
-pygame.display.set_icon(pygame.image.load("images\\icon.png"))
+pygame.display.set_icon(pygame.image.load("images/icon.png"))
 pygame.display.set_caption("Ants")
 
 clock = pygame.time.Clock()
@@ -61,12 +61,13 @@ class Game:
 
         """Food setup"""
         self.food = []
-        self.qFood = Index(bbox=[0, 0, self.w_width, self.w_height])
+        # self.qFood = Index(bbox=[0, 0, self.w_width, self.w_height])
+        self.qFood = QuadTree((0, 0, self.w_width, self.w_height), capacity=20, track_objects=True)
 
         for _ in range(FOOD_COUNT):
             new_food = Food(self)
             self.food.append(new_food)
-            self.qFood.insert(new_food, bbox=new_food.get_bbox())
+            self.qFood.insert((new_food.x, new_food.y), obj=new_food)
 
         self.colonies = [Colony(self, 0, (100, 100), FORAGERS, TUNNLERS),
                          Colony(self, 1, (self.w_width - 100, self.w_height - 100), FORAGERS, TUNNLERS)]
